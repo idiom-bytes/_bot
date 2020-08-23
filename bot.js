@@ -54,18 +54,18 @@ bot.onText(/\/burn/, async (msg) => {
   xampContract.methods.lastRebase().call()
     .then(async (res) => {
       console.log('res: ', res);
-      const lastXampRebaseDate = moment(new Date(res * 1000));
+      const lastXampRebaseDate = moment(new Date(res));
       console.log('lastXampRebaseDate:', lastXampRebaseDate);
       const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
       const xampUsd = xampPrice.market_data.current_price.usd;
       const now = new Date();
-      const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
-      const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
+      const canRebase = new Date(new Date(res).getTime() + 60 * 60 * 12) > now.getTime();
+      const tillNextRebase = new Date(new Date(res).getTime() + 60 * 60 * 12);
       const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
       xampContract.methods.lastExchangeRate().call()
       .then(res => {
         const lastRebaseRate = (res/10000000000).toFixed(6);
-        const xampText = `Current price of XAMP is: *$${xampUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened *${lastXampRebaseDate.fromNow()}*. ${nextRebaseString}`;
+        const xampText = `Current price of XAMP is: *$${xampUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastXampRebaseDate.fromNow()}. ${nextRebaseString}`;
         bot.sendMessage(msg.chat.id, xampText);
       })
       
@@ -80,18 +80,18 @@ bot.onText(/\/burn/, async (msg) => {
     tobContract.methods.lastRebase().call()
     .then(async (res) => {
       console.log('res: ', res);
-      const lastTobRebaseDate = moment(new Date(res * 1000));
+      const lastTobRebaseDate = moment(new Date(res));
       console.log('lastTobRebaseDate:', lastTobRebaseDate);
       const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
       const tobUsd = tobPrice.market_data.current_price.usd;
       const now = new Date();
-      const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000) > now.getTime();
-      const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000);
+      const canRebase = new Date(new Date(res).getTime() + 60 * 60 * 24) > now.getTime();
+      const tillNextRebase = new Date(new Date(res).getTime() + 60 * 60 * 24);
       const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
       xampContract.methods.lastExchangeRate().call()
       .then(res => {
         const lastRebaseRate = (res/10000000000).toFixed(6);
-        const xampText = `Current price of TOB is: *$${tobUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened *${lastTobRebaseDate.fromNow()}*. ${nextRebaseString}`;
+        const xampText = `Current price of TOB is: *$${tobUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastTobRebaseDate.fromNow()}. ${nextRebaseString}`;
         bot.sendMessage(msg.chat.id, xampText);
       })
       
