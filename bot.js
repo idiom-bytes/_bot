@@ -54,13 +54,13 @@ bot.onText(/\/burn/, async (msg) => {
   xampContract.methods.lastRebase().call()
     .then(async (res) => {
       console.log('res: ', res);
-      const lastXampRebaseDate = moment(new Date(res));
+      const lastXampRebaseDate = moment(new Date(res * 1000));
       console.log('lastXampRebaseDate:', lastXampRebaseDate);
       const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
       const xampUsd = xampPrice.market_data.current_price.usd;
       const now = new Date();
-      const canRebase = new Date(new Date(res).getTime() + 60 * 60 * 12) > now.getTime();
-      const tillNextRebase = new Date(new Date(res).getTime() + 60 * 60 * 12);
+      const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
+      const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
       const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
       xampContract.methods.lastExchangeRate().call()
       .then(res => {
@@ -80,13 +80,13 @@ bot.onText(/\/burn/, async (msg) => {
     tobContract.methods.lastRebase().call()
     .then(async (res) => {
       console.log('res: ', res);
-      const lastTobRebaseDate = moment(new Date(res));
+      const lastTobRebaseDate = moment(new Date(res * 1000));
       console.log('lastTobRebaseDate:', lastTobRebaseDate);
       const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
       const tobUsd = tobPrice.market_data.current_price.usd;
       const now = new Date();
-      const canRebase = new Date(new Date(res).getTime() + 60 * 60 * 24) > now.getTime();
-      const tillNextRebase = new Date(new Date(res).getTime() + 60 * 60 * 24);
+      const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000) > now.getTime();
+      const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000);
       const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
       xampContract.methods.lastExchangeRate().call()
       .then(res => {
