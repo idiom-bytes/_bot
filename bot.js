@@ -116,8 +116,8 @@ bot.onText(/\/ratio/, async (msg) => {
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
 
-  const xampUsd = tobPrice.market_data.current_price.eth;
-  const tobUsd = xampPrice.market_data.current_price.eth;
+  const xampUsd = tobPrice.market_data.current_price.usd;
+  const tobUsd = xampPrice.market_data.current_price.usd;
   bot.sendMessage(msg.chat.id, `XAMP/TOB: ${Math.ceil((xampUsd/tobUsd) * 100)/100}`);
 });
 
