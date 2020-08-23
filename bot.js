@@ -68,7 +68,7 @@ bot.onText(/\/burn/, async (msg) => {
         const xampText = `Current price of XAMP is: *$${xampUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastXampRebaseDate.fromNow()}. ${nextRebaseString}`;
         bot.sendMessage(msg.chat.id, xampText);
       })
-      
+
     })
     .catch(err => {
       console.log(err);
@@ -94,7 +94,7 @@ bot.onText(/\/burn/, async (msg) => {
         const xampText = `Current price of TOB is: *$${tobUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastTobRebaseDate.fromNow()}. ${nextRebaseString}`;
         bot.sendMessage(msg.chat.id, xampText);
       })
-      
+
     })
     .catch(err => {
       console.log(err);
@@ -111,7 +111,7 @@ bot.onText(/\/ratio/, async (msg) => {
     localization: false,
     sparkline: false,
   };
-
+  // TODO fetch directly from uniswap
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
@@ -119,6 +119,10 @@ bot.onText(/\/ratio/, async (msg) => {
   const xampUsd = tobPrice.market_data.current_price.usd;
   const tobUsd = xampPrice.market_data.current_price.usd;
   bot.sendMessage(msg.chat.id, `XAMP/TOB: ${Math.ceil((xampUsd/tobUsd) * 100)/100}`);
+});
+
+bot.onText(/\/whale/, async (msg) => {
+  // TODO whale af
 });
 
 
