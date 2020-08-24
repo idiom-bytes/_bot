@@ -89,12 +89,15 @@ bot.onText(/\/burn/, async (msg) => {
   // STEP #1
   // TOB PRICE LOGIC
   // Price in USD
-  const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
-  const tob_currentExchangeRate = tobPrice.market_data.current_price.usd;
-  console.log('TOB-currenctExchangeRate: ', tob_currentExchangeRate);
+  var tob_currentRebaseRate = -1.0;
+   await tobContract.methods.currentExchangeRate().call()
+    .then(res => {
+      tob_currentRebaseRate = (res / 10000000000).toFixed(6);
+      console.log('TOB-currentRebaseRate: ', tob_currentRebaseRate);
+    })
 
   var tob_lastRebaseRate = -1.0;
-  await tobContract.methods.currentExchangeRate().call()
+  await tobContract.methods.lastExchangeRate().call()
     .then(res => {
       tob_lastRebaseRate = (res / 10000000000).toFixed(6);
       console.log('TOB-lastRebaseRate: ', tob_lastRebaseRate);
@@ -127,7 +130,7 @@ bot.onText(/\/burn/, async (msg) => {
   // STEP #3
   // TOB CAN REBASE LOGIC
   const tob_canRebaseDate = now.getTime() > tob_nextRebaseDate;
-  const tob_canRebasePrice = tob_currentExchangeRate > tob_lastRebaseRate;
+  const tob_canRebasePrice = tob_currentRebaseRate > tob_lastRebaseRate;
   console.log('TOB-canRebaseDate: ', tob_canRebaseDate);
   console.log('TOB-canRebasePrice: ', tob_canRebasePrice);
 
@@ -137,7 +140,7 @@ bot.onText(/\/burn/, async (msg) => {
   // STEP #4
   // TG Bot Text
   const tobText = `
-        Current price of TOB is: $${tob_currentExchangeRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
+        Current price of TOB is: $${tob_currentRebaseRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
   bot.sendMessage(msg.chat.id, tobText);
 });
 
