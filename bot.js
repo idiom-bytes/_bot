@@ -38,6 +38,7 @@ const CG_PARAMS = {
   sparkline: false,
 };
 
+// TODO figure out why the bot fails/crashes sometimes and doesnt restart
 bot.onText(/\/burn/, async (msg) => {
   const CoinGeckoClient = new CoinGecko();
   const network = "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY;
@@ -65,6 +66,7 @@ bot.onText(/\/burn/, async (msg) => {
         .then(res => {
           const lastRebaseRate = (res / 10000000000).toFixed(6);
           // TODO make sure this info is correct. add burn target price
+          // TODO MAKE SURE ALL OF THIS IS CORRECT!
           const xampText = `Current price of XAMP is: *$${xampUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastXampRebaseDate.fromNow()}. ${nextRebaseString}`;
           bot.sendMessage(msg.chat.id, xampText);
         })
@@ -148,7 +150,7 @@ bot.onText(/\/ratio/, async (msg) => {
     localization: false,
     sparkline: false,
   };
-  // TODO fetch directly from uniswap so it has real time ratio pricing. coingecko seems delayed
+  // TODO fetch directly from uniswap so it has real time ratio pricing. coingecko seems delayed!!!!!
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
@@ -184,7 +186,7 @@ bot.onText(/\/sites/, async (msg) => {
 });
 
 bot.onText(/\/help-burn-bot/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /release-ash /donate . Also, code can be found here if you want to audit/contribute: gitlab.com/ssfaleads/burnbot`);
+  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /release-ash /donate /help-burn-bot . Also, code can be found here if you want to audit/contribute: gitlab.com/ssfaleads/burnbot`);
 });
 
 bot.onText(/\/release-ash/, async (msg) => {
