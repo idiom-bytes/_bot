@@ -5,19 +5,10 @@ const dotenv = require('dotenv');
 const Web3 = require('web3');
 const moment = require('moment')
 dotenv.config();
-const TOKEN = process.env.TELEGRAM_TOKEN || 'some-token-here';
 
-// Heroku routes from port :443 to $PORT
-// Add URL of your app to env variable or enable Dyno Metadata
-// to get this automatically
-// See: https://devcenter.heroku.com/articles/dyno-metadata
-// const url = process.env.APP_URL || 'https://<app-name>.herokuapp.com:443';
+const TOKEN = process.env.TELEGRAM_TOKEN || 'your-api-key-here';
+
 const bot = new TelegramBot(TOKEN, {polling: true});
-
-
-// This informs the Telegram servers of the new webhook.
-// Note: we do not need to pass in the cert, as it already provided
-// bot.setWebHook(`${url}/bot${TOKEN}`);
 
 const TOKENS = {
     'xamp': {
@@ -50,7 +41,6 @@ bot.onText(/\/burn/, async (msg) => {
   console.log(network);
   const web3 = new Web3(new Web3.providers.HttpProvider(network));
   const xampContract = new web3.eth.Contract(TOKENS.xamp.rebaseAbi, TOKENS.xamp.rebaseAddress);
-  // console.log(xampContract);
   xampContract.methods.lastRebase().call()
     .then(async (res) => {
       console.log('res: ', res);
@@ -59,12 +49,17 @@ bot.onText(/\/burn/, async (msg) => {
       const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
       const xampUsd = xampPrice.market_data.current_price.usd;
       const now = new Date();
+      // TODO use momentjs to do this properly. also figure out if this is correct + next rebase time
       const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
       const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
+      // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
+      // if currentExchangeRate < lastExchangeRate on XAMP, burn
+      // Vice versa for TOB
       const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
       xampContract.methods.lastExchangeRate().call()
       .then(res => {
         const lastRebaseRate = (res/10000000000).toFixed(6);
+        // TODO make sure this info is correct. add burn target price
         const xampText = `Current price of XAMP is: *$${xampUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastXampRebaseDate.fromNow()}. ${nextRebaseString}`;
         bot.sendMessage(msg.chat.id, xampText);
       })
@@ -85,6 +80,7 @@ bot.onText(/\/burn/, async (msg) => {
       const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
       const tobUsd = tobPrice.market_data.current_price.usd;
       const now = new Date();
+      // TODO use momentjs to do this properly. also figure out if this is correct + next rebase time
       const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000) > now.getTime();
       const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000);
       // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
@@ -95,6 +91,7 @@ bot.onText(/\/burn/, async (msg) => {
       .then(res => {
         const lastRebaseRate = (res/10000000000).toFixed(6);
         // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
+        // TODO make sure this info is correct. add burn target price
         const tobText = `Current price of TOB is: *$${tobUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastTobRebaseDate.fromNow()}. ${nextRebaseString}`;
         bot.sendMessage(msg.chat.id, tobText);
       })
@@ -115,7 +112,7 @@ bot.onText(/\/ratio/, async (msg) => {
     localization: false,
     sparkline: false,
   };
-  // TODO fetch directly from uniswap
+  // TODO fetch directly from uniswap so it has real time ratio pricing. coingecko seems delayed
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
@@ -132,7 +129,7 @@ bot.onText(/\/donate/, async (msg) => {
   bot.sendMessage(msg.chat.id, `donate some XAMP, ETH or TOB if you like the bot, thanks: 0x3E597Ec4a398e0a75b288CeE9Fb65f9405bd7141`);
 });
 
-bot.onText(/\/contract/, async (msg) => {
+bot.onText(/\/contracts/, async (msg) => {
   bot.sendMessage(msg.chat.id, `TOB CONTRACT: ${TOKENS.tob.address}`);
   bot.sendMessage(msg.chat.id, `XAMP CONTRACT: ${TOKENS.xamp.address}`);
 });
@@ -142,6 +139,14 @@ bot.onText(/\/rebase/, async (msg) => {
   bot.sendMessage(msg.chat.id, `XAMP REBASE CONTRACT: ${TOKENS.xamp.rebaseAddress}`);
 });
 
+bot.onText(/\/sites/, async (msg) => {
+  bot.sendMessage(msg.chat.id, `TOB REBASE CONTRACT: ${TOKENS.tob.rebaseAddress}`);
+  bot.sendMessage(msg.chat.id, `XAMP REBASE CONTRACT: ${TOKENS.xamp.rebaseAddress}`);
+});
+
+bot.onText(/\/help-burn-bot/, async (msg) => {
+  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /donate`);
+});
 
 bot.onText(/\/whale/, async (msg) => {
   // TODO whale af
