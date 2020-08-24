@@ -87,12 +87,16 @@ bot.onText(/\/burn/, async (msg) => {
       const now = new Date();
       const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000) > now.getTime();
       const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 24 * 1000);
+      // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
+      // if currentExchangeRate < lastExchangeRate on XAMP, burn
+      // Vice versa for TOB
       const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
       xampContract.methods.lastExchangeRate().call()
       .then(res => {
         const lastRebaseRate = (res/10000000000).toFixed(6);
-        const xampText = `Current price of TOB is: *$${tobUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastTobRebaseDate.fromNow()}. ${nextRebaseString}`;
-        bot.sendMessage(msg.chat.id, xampText);
+        // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
+        const tobText = `Current price of TOB is: *$${tobUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastTobRebaseDate.fromNow()}. ${nextRebaseString}`;
+        bot.sendMessage(msg.chat.id, tobText);
       })
 
     })
@@ -125,9 +129,18 @@ bot.onText(/\/ratio/, async (msg) => {
 });
 
 bot.onText(/\/donate/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `Donate to mi familia thx: 0x3E597Ec4a398e0a75b288CeE9Fb65f9405bd7141`);
+  bot.sendMessage(msg.chat.id, `donate some XAMP, ETH or TOB if you like the bot, thanks: 0x3E597Ec4a398e0a75b288CeE9Fb65f9405bd7141`);
 });
 
+bot.onText(/\/contract/, async (msg) => {
+  bot.sendMessage(msg.chat.id, `TOB CONTRACT: ${TOKENS.tob.address}`);
+  bot.sendMessage(msg.chat.id, `XAMP CONTRACT: ${TOKENS.xamp.address}`);
+});
+
+bot.onText(/\/rebase/, async (msg) => {
+  bot.sendMessage(msg.chat.id, `TOB REBASE CONTRACT: ${TOKENS.tob.rebaseAddress}`);
+  bot.sendMessage(msg.chat.id, `XAMP REBASE CONTRACT: ${TOKENS.xamp.rebaseAddress}`);
+});
 
 
 bot.onText(/\/whale/, async (msg) => {
