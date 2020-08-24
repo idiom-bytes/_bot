@@ -181,9 +181,9 @@ bot.onText(/\/sites/, async (msg) => {
 });
 
 bot.onText(/\/help-burn-bot/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /donate`);
+  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /donate`);
 });
 
 bot.onText(/\/whale/, async (msg) => {
-  // TODO whale af
+  bot.sendMessage(msg.chat.id, `Work in progess... visit https://whalegames.co for latest xamp/tob whale info.`);
 });
