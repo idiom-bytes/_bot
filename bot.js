@@ -135,7 +135,7 @@ bot.onText(/\/burn/, async (msg) => {
   // STEP #4
   // TG Bot Text
   const tobText = `
-        Current price of TOB is: $${tob_currentExchangeRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
+        Current price of TOB is: $${tob_currentExchangeRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.fromNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
   bot.sendMessage(msg.chat.id, tobText);
 });
 
