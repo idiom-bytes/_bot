@@ -35,6 +35,7 @@ const TOKENS = {
     sparkline: false,
   };
 
+// https://www.shawntabrizi.com/ethereum/making-web3-js-work-asynchronously-javascript-promises-await/ maybe use async
 bot.onText(/\/burn/, async (msg) => {
   const CoinGeckoClient = new CoinGecko();
   const network = "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY;
