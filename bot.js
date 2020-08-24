@@ -56,6 +56,7 @@ bot.onText(/\/burn/, async (msg) => {
       const xampUsd = xampPrice.market_data.current_price.usd;
       const now = new Date();
 
+      // TODO - XAMP Rebase timer is still off -- Reported by @knorry
       // TODO use momentjs to do this properly. also figure out if this is correct + next rebase time
       const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
       const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
