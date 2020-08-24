@@ -193,6 +193,9 @@ bot.onText(/\/release-ash/, async (msg) => {
   bot.sendMessage(msg.chat.id, `have some fucking patience!`);
 });
 
+bot.onText(/\/chart-links/, async (msg) => {
+  bot.sendMessage(msg.chat.id, `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: chartex.pro/?symbol=UNISWAP:TOB \n RATIO CHART: uniswap.info/pair/0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af `);
+});
 
 bot.onText(/\/whale/, async (msg) => {
   bot.sendMessage(msg.chat.id, `Work in progess... visit https://whalegames.co for latest xamp/tob whale info.`);
