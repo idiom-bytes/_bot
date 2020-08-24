@@ -156,6 +156,7 @@ bot.onText(/\/ratio/, async (msg) => {
     sparkline: false,
   };
   // TODO fetch directly from uniswap so it has real time ratio pricing. coingecko seems delayed!!!!!
+  // TODO test
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
