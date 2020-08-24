@@ -124,6 +124,12 @@ bot.onText(/\/ratio/, async (msg) => {
   bot.sendMessage(msg.chat.id, `XAMP/TOB ETH: ${Math.ceil((xampETH / tobETH) * 100) / 100}`);
 });
 
+bot.onText(/\/donate/, async (msg) => {
+  bot.sendMessage(msg.chat.id, `Donate to mi familia thx: 0x3E597Ec4a398e0a75b288CeE9Fb65f9405bd7141`);
+});
+
+
+
 bot.onText(/\/whale/, async (msg) => {
   // TODO whale af
 });
