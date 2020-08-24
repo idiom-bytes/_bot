@@ -187,10 +187,3 @@ bot.onText(/\/help-burn-bot/, async (msg) => {
 bot.onText(/\/whale/, async (msg) => {
   // TODO whale af
 });
-
-
-
-// Just to ping!
-bot.on('message', function onMessage(msg) {
-  bot.sendMessage(msg, 'I am alive!');
-});
