@@ -92,7 +92,7 @@ bot.onText(/\/burn/, async (msg) => {
   console.log('TOB-currenctExchangeRate: ', tob_currentExchangeRate);
 
   var tob_lastRebaseRate = -1.0;
-  await tobContract.methods.lastExchangeRate().call()
+  await tobContract.methods.currentExchangeRate().call()
     .then(res => {
       tob_lastRebaseRate = (res / 10000000000).toFixed(6);
       console.log('TOB-lastRebaseRate: ', tob_lastRebaseRate);
@@ -135,7 +135,7 @@ bot.onText(/\/burn/, async (msg) => {
   // STEP #4
   // TG Bot Text
   const tobText = `
-        Current price of TOB is: $${tob_currentExchangeRate}.\nLast rebase rate was $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn allowed ${tob_nextRebaseDate.fromNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
+        Current price of TOB is: $${tob_currentExchangeRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.fromNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
   bot.sendMessage(msg.chat.id, tobText);
 });
 
