@@ -161,7 +161,7 @@ bot.onText(/\/ratio/, async (msg) => {
 });
 
 bot.onText(/\/donate/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `donate some XAMP, ETH or TOB if you like the bot, thanks: 0x3E597Ec4a398e0a75b288CeE9Fb65f9405bd7141`);
+  bot.sendMessage(msg.chat.id, `donate some XAMP, ETH or TOB if you like the bot, thanks: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2`);
 });
 
 bot.onText(/\/contracts/, async (msg) => {
