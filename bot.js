@@ -176,8 +176,10 @@ bot.onText(/\/rebase/, async (msg) => {
 });
 
 bot.onText(/\/sites/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `TOB REBASE CONTRACT: ${TOKENS.tob.rebaseAddress}`);
-  bot.sendMessage(msg.chat.id, `XAMP REBASE CONTRACT: ${TOKENS.xamp.rebaseAddress}`);
+  bot.sendMessage(msg.chat.id, `Official TOB Site: https://www.tokensofbabel.com/`);
+  bot.sendMessage(msg.chat.id, `TOB Site with rebase info + ability to call rebase: https://tobburn.online/`);
+  bot.sendMessage(msg.chat.id, `Official XAMP Site: https://www.antiample.org/`);
+  bot.sendMessage(msg.chat.id, `XAMP Site with rebase info + ability to call rebase: http://xampburn.com/`);
 });
 
 bot.onText(/\/help-burn-bot/, async (msg) => {
