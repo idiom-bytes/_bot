@@ -118,7 +118,10 @@ bot.onText(/\/ratio/, async (msg) => {
 
   const xampUsd = tobPrice.market_data.current_price.usd;
   const tobUsd = xampPrice.market_data.current_price.usd;
-  bot.sendMessage(msg.chat.id, `XAMP/TOB: ${Math.ceil((xampUsd/tobUsd) * 100)/100}`);
+  bot.sendMessage(msg.chat.id, `XAMP/TOB USD: ${Math.ceil((xampUsd/tobUsd) * 100)/100}`);
+  const xampETH = tobPrice.market_data.current_price.eth;
+  const tobETH = xampPrice.market_data.current_price.eth;
+  bot.sendMessage(msg.chat.id, `XAMP/TOB ETH: ${Math.ceil((xampETH / tobETH) * 100) / 100}`);
 });
 
 bot.onText(/\/whale/, async (msg) => {
