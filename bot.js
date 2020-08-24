@@ -139,6 +139,7 @@ bot.onText(/\/burn/, async (msg) => {
 
 
 bot.onText(/\/ratio/, async (msg) => {
+  console.log('RATIO CALLED: ', msg);
   const CG_PARAMS = {
     market_data: true,
     tickers: false,
