@@ -182,7 +182,7 @@ bot.onText(/\/donate/, async (msg) => {
 bot.onText(/\/contracts/, async (msg) => {
   bot.sendMessage(msg.chat.id, `TOB CONTRACT: ${TOKENS.tob.address}`);
   bot.sendMessage(msg.chat.id, `XAMP CONTRACT: ${TOKENS.xamp.address}`);
-  bot.sendMessage(msg.chat.id, `BOA CONTRACT: ${TOKENS.xamp.address}`);
+  bot.sendMessage(msg.chat.id, `BOA CONTRACT: ${TOKENS.boa.address}`);
 });
 
 bot.onText(/\/rebase/, async (msg) => {
