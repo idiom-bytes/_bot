@@ -11,6 +11,9 @@ const TOKEN = process.env.TELEGRAM_TOKEN || 'your-api-key-here';
 const bot = new TelegramBot(TOKEN, { polling: true });
 
 const TOKENS = {
+  boa: {
+    address: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
+  },
   'xamp': {
     address: "0xf911a7ec46a2c6fa49193212fe4a2a9b95851c27",
     slug: 'antiample',
@@ -173,12 +176,13 @@ bot.onText(/\/ratio/, async (msg) => {
 });
 
 bot.onText(/\/donate/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `donate some XAMP, ETH or TOB if you like the bot, thanks: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2`);
+  bot.sendMessage(msg.chat.id, `donate some XAMP, ETH, BOA or TOB if you like the bot, thanks: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2`);
 });
 
 bot.onText(/\/contracts/, async (msg) => {
   bot.sendMessage(msg.chat.id, `TOB CONTRACT: ${TOKENS.tob.address}`);
   bot.sendMessage(msg.chat.id, `XAMP CONTRACT: ${TOKENS.xamp.address}`);
+  bot.sendMessage(msg.chat.id, `BOA CONTRACT: ${TOKENS.xamp.address}`);
 });
 
 bot.onText(/\/rebase/, async (msg) => {
@@ -191,6 +195,8 @@ bot.onText(/\/sites/, async (msg) => {
   bot.sendMessage(msg.chat.id, 'TOB Site with rebase info + ability to call rebase: tobburn.online');
   bot.sendMessage(msg.chat.id, 'Official XAMP Site: antiample.org');
   bot.sendMessage(msg.chat.id, 'XAMP Site with rebase info + ability to call rebase: xampburn.com');
+  bot.sendMessage(msg.chat.id, 'Official BOA Site: boa-token.webflow.io');
+
 });
 
 bot.onText(/\/help-burn-bot/, async (msg) => {
@@ -202,7 +208,7 @@ bot.onText(/\/release-ash/, async (msg) => {
 });
 
 bot.onText(/\/chart-links/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: chartex.pro/?symbol=UNISWAP:TOB \n RATIO CHART: uniswap.info/pair/0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af `);
+  bot.sendMessage(msg.chat.id, `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: chartex.pro/?symbol=UNISWAP:TOB \n RATIO CHART: uniswap.info/pair/0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA`);
 });
 
 bot.onText(/\/whale/, async (msg) => {
