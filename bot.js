@@ -73,7 +73,10 @@ bot.onText(/\/burn/, async (msg) => {
           const lastRebaseRate = (res / 10000000000).toFixed(6);
           // TODO make sure this info is correct. add burn target price
           // TODO MAKE SURE ALL OF THIS IS CORRECT!
-          const xampText = `Current price of XAMP is: *$${xampUsd}*. Last rebase rate was *${lastRebaseRate}*. Last burn happened ${lastXampRebaseDate.fromNow()}. ${nextRebaseString}`;
+        //   const tobText = `
+        // Current price of TOB is: $${tob_currentRebaseRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
+          const xampText = `
+          Current price of XAMP is: $${xampUsd}.\nLast rebase rate was ${lastRebaseRate}.\nLast burn happened ${lastXampRebaseDate.fromNow()}.\n${nextRebaseString}`;
           bot.sendMessage(msg.chat.id, xampText);
         })
 
