@@ -76,7 +76,7 @@ bot.onText(/\/burn/, async (msg) => {
         //   const tobText = `
         // Current price of TOB is: $${tob_currentRebaseRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
           const xampText = `
-          Current price of XAMP is: $${xampUsd}.\nLast rebase rate was ${lastRebaseRate}.\nLast burn happened ${lastXampRebaseDate.fromNow()}.\n${nextRebaseString}`;
+          Current price of XAMP is: $${xampUsd}.\nLast rebase rate was $${lastRebaseRate}.\nLast burn happened ${lastXampRebaseDate.fromNow()}.\n${nextRebaseString}`;
           bot.sendMessage(msg.chat.id, xampText);
         })
 
