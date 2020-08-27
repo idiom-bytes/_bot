@@ -229,12 +229,11 @@ bot.onText(/\/marketcap/, async (msg) => {
   const tobSupply = 1801511;
   bot.sendMessage(msg.chat.id, `
     BILL DRUMMOND TOKENS MARKETCAP \n
-    CALCULATED WITH CIRCULATING SUPPLY \n
-    XAMP supply (est): ${xampSupply}, price: $${xampPrice} \n
-    TOB supply (est): ${tobSupply}, price: $${tobPrice} \n \n
-    XAMP marketcap - ${xampSupply * xampPrice} \n
-    TOB marketcap - ${tobSupply * tobPrice} \n \n
-    BOA price isn't available yet \n
-    Supply stats last updated 8/26/2020 @ 10:40 EST \n
-  `);
+CALCULATED WITH CIRCULATING SUPPLY \n
+XAMP supply (est): ${xampSupply}, price: $${xampPrice} \n
+TOB supply (est): ${tobSupply}, price: $${tobPrice} \n \n
+XAMP marketcap - ${xampSupply * xampPrice} \n
+TOB marketcap - ${tobSupply * tobPrice} \n \n
+BOA price isn't available yet \n
+Supply stats last updated 8/26/2020 @ 10:40 EST \n`);
 })
