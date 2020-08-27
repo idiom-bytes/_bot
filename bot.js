@@ -172,12 +172,12 @@ bot.onText(/\/ratio/, async (msg) => {
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
 
   bot.sendMessage(msg.chat.id, `Ratio is based from Coingecko market data.. so it might be a little delayed.`);
-  const xampUsd = tobPrice.market_data.current_price.usd;
-  const tobUsd = xampPrice.market_data.current_price.usd;
-  bot.sendMessage(msg.chat.id, `XAMP/TOB USD: ${Math.ceil((xampUsd / tobUsd) * 100) / 100}`);
-  const xampETH = tobPrice.market_data.current_price.eth;
-  const tobETH = xampPrice.market_data.current_price.eth;
-  bot.sendMessage(msg.chat.id, `XAMP/TOB ETH: ${Math.ceil((xampETH / tobETH) * 100) / 100}`);
+  const xampUsd = xampPrice.market_data.current_price.usd;
+  const tobUsd = tobUsd.market_data.current_price.usd;
+  bot.sendMessage(msg.chat.id, `XAMP/TOB USD: ${Math.ceil((tobUsd / xampUsd) * 100) / 100}`);
+  const xampETH = xampPrice.market_data.current_price.eth;
+  const tobETH = tobPrice.market_data.current_price.eth;
+  bot.sendMessage(msg.chat.id, `XAMP/TOB ETH: ${Math.ceil((tobETH / xampETH) * 100) / 100}`);
 });
 
 bot.onText(/\/donate/, async (msg) => {
@@ -224,8 +224,8 @@ bot.onText(/\/marketcap/, async (msg) => {
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
-  const xampUsd = tobPrice.market_data.current_price.usd;
-  const tobUsd = xampPrice.market_data.current_price.usd;
+  const xampUsd = xampPrice.market_data.current_price.usd;
+  const tobUsd = tobPrice.market_data.current_price.usd;
 
   const xampSupply = 476121713;
   const tobSupply = 1801511;
@@ -234,8 +234,8 @@ bot.onText(/\/marketcap/, async (msg) => {
 CALCULATED WITH CIRCULATING SUPPLY \n
 XAMP supply (est): ${xampSupply}, price: $${xampUsd} \n
 TOB supply (est): ${tobSupply}, price: $${tobUsd} \n \n
-XAMP marketcap - ${xampSupply * xampUsd} \n
-TOB marketcap - ${tobSupply * tobUsd} \n \n
+XAMP marketcap - ${Math.ceil((xampSupply * xampUsd) * 100) / 100} \n
+TOB marketcap - ${Math.ceil((tobSupply * tobUsd) * 100) / 100} \n \n
 BOA price isn't available yet \n
 Supply stats last updated 8/26/2020 @ 10:40 EST \n`);
 })
