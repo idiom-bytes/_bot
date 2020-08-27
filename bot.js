@@ -173,7 +173,7 @@ bot.onText(/\/ratio/, async (msg) => {
 
   bot.sendMessage(msg.chat.id, `Ratio is based from Coingecko market data.. so it might be a little delayed.`);
   const xampUsd = xampPrice.market_data.current_price.usd;
-  const tobUsd = tobUsd.market_data.current_price.usd;
+  const tobUsd = tobPrice.market_data.current_price.usd;
   bot.sendMessage(msg.chat.id, `XAMP/TOB USD: ${Math.ceil((tobUsd / xampUsd) * 100) / 100}`);
   const xampETH = xampPrice.market_data.current_price.eth;
   const tobETH = tobPrice.market_data.current_price.eth;
