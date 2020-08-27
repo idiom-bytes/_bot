@@ -10,15 +10,6 @@ const TOKEN = process.env.TELEGRAM_TOKEN || 'your-api-key-here';
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
-// const CG_PARAMS = {
-//   market_data: true,
-//   tickers: false,
-//   community_data: false,
-//   developer_data: false,
-//   localization: false,
-//   sparkline: false,
-// };
-
 const TOKENS = {
   boa: {
     address: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
@@ -53,7 +44,7 @@ const CG_PARAMS = {
   sparkline: false,
 };
 
-// TODO figure out why the bot fails/crashes sometimes and doesnt restart
+// TODO(jc): wire up uniswap for real time pricing info
 bot.onText(/\/burn/, async (msg) => {
   const CoinGeckoClient = new CoinGecko();
   const network = "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY;
@@ -74,6 +65,7 @@ bot.onText(/\/burn/, async (msg) => {
       const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
       const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
 
+      // TODO(jc): are these TODOs still relevant?
       // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
       // if currentExchangeRate < lastExchangeRate on XAMP, burn
       // Vice versa for TOB
@@ -81,10 +73,8 @@ bot.onText(/\/burn/, async (msg) => {
       xampContract.methods.lastExchangeRate().call()
         .then(res => {
           const lastRebaseRate = (res / 10000000000).toFixed(6);
-          // TODO make sure this info is correct. add burn target price
-          // TODO MAKE SURE ALL OF THIS IS CORRECT!
-        //   const tobText = `
-        // Current price of TOB is: $${tob_currentRebaseRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
+          // TODO(jc): are these TODOs still relevant?
+          // TODO make sure this info is correct
           const xampText = `
           Current price of XAMP is: $${xampUsd}.\nLast rebase rate was $${lastRebaseRate}.\nLast burn happened ${lastXampRebaseDate.fromNow()}.\n${nextRebaseString}`;
           bot.sendMessage(msg.chat.id, xampText);
@@ -161,12 +151,12 @@ bot.onText(/\/burn/, async (msg) => {
   bot.sendMessage(msg.chat.id, tobText);
 });
 
-
 bot.onText(/\/ratio/, async (msg) => {
   console.log('testing auto deploy works...');
   console.log('RATIO CALLED: ', msg);
+  // TODO(jc): wire up uniswap pricing info to get real time ratio
+  // TODO(jc): add BOA/TOB ratio
   // TODO fetch directly from uniswap so it has real time ratio pricing. coingecko seems delayed!!!!!
-  // TODO test
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
@@ -217,6 +207,7 @@ bot.onText(/\/chart-links/, async (msg) => {
 });
 
 bot.onText(/\/whale/, async (msg) => {
+  // TODO(jc): expose a whalegames endpoint to show top wallet changes in last 24hrs for xamp/tob/boa
   bot.sendMessage(msg.chat.id, `Work in progess... visit https://whalegames.co for latest xamp/tob whale info.`);
 });
 
@@ -227,6 +218,8 @@ bot.onText(/\/marketcap/, async (msg) => {
   const xampUsd = xampPrice.market_data.current_price.usd;
   const tobUsd = tobPrice.market_data.current_price.usd;
 
+  // TODO(jc): use uniswap api to get BOA price in real time
+  // TODO(jc): calculate supply dynamically using web3
   const xampSupply = 476121713;
   const tobSupply = 1801511;
   bot.sendMessage(msg.chat.id, `
