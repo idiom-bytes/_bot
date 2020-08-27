@@ -224,16 +224,18 @@ bot.onText(/\/marketcap/, async (msg) => {
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
+  const xampUsd = tobPrice.market_data.current_price.usd;
+  const tobUsd = xampPrice.market_data.current_price.usd;
 
   const xampSupply = 476121713;
   const tobSupply = 1801511;
   bot.sendMessage(msg.chat.id, `
     BILL DRUMMOND TOKENS MARKETCAP \n
 CALCULATED WITH CIRCULATING SUPPLY \n
-XAMP supply (est): ${xampSupply}, price: $${xampPrice} \n
-TOB supply (est): ${tobSupply}, price: $${tobPrice} \n \n
-XAMP marketcap - ${xampSupply * xampPrice} \n
-TOB marketcap - ${tobSupply * tobPrice} \n \n
+XAMP supply (est): ${xampSupply}, price: $${xampUsd} \n
+TOB supply (est): ${tobSupply}, price: $${tobUsd} \n \n
+XAMP marketcap - ${xampSupply * xampUsd} \n
+TOB marketcap - ${tobSupply * tobUsd} \n \n
 BOA price isn't available yet \n
 Supply stats last updated 8/26/2020 @ 10:40 EST \n`);
 })
