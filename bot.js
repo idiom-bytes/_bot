@@ -10,6 +10,15 @@ const TOKEN = process.env.TELEGRAM_TOKEN || 'your-api-key-here';
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
+// const CG_PARAMS = {
+//   market_data: true,
+//   tickers: false,
+//   community_data: false,
+//   developer_data: false,
+//   localization: false,
+//   sparkline: false,
+// };
+
 const TOKENS = {
   boa: {
     address: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
@@ -34,6 +43,7 @@ const TOKENS = {
     slug: 'tokens-of-babel',
   }
 }
+
 const CG_PARAMS = {
   market_data: true,
   tickers: false,
@@ -155,14 +165,6 @@ bot.onText(/\/burn/, async (msg) => {
 bot.onText(/\/ratio/, async (msg) => {
   console.log('testing auto deploy works...');
   console.log('RATIO CALLED: ', msg);
-  const CG_PARAMS = {
-    market_data: true,
-    tickers: false,
-    community_data: false,
-    developer_data: false,
-    localization: false,
-    sparkline: false,
-  };
   // TODO fetch directly from uniswap so it has real time ratio pricing. coingecko seems delayed!!!!!
   // TODO test
   const CoinGeckoClient = new CoinGecko();
@@ -217,3 +219,22 @@ bot.onText(/\/chart-links/, async (msg) => {
 bot.onText(/\/whale/, async (msg) => {
   bot.sendMessage(msg.chat.id, `Work in progess... visit https://whalegames.co for latest xamp/tob whale info.`);
 });
+
+bot.onText(/\/marketcap/, async (msg) => {
+  const CoinGeckoClient = new CoinGecko();
+  const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
+  const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
+
+  const xampSupply = 476121713;
+  const tobSupply = 1801511;
+  bot.sendMessage(msg.chat.id, `
+    BILL DRUMMOND TOKENS MARKETCAP \n
+    CALCULATED WITH CIRCULATING SUPPLY \n
+    XAMP supply (est): ${xampSupply}, price: $${xampPrice} \n
+    TOB supply (est): ${tobSupply}, price: $${tobPrice} \n \n
+    XAMP marketcap - ${xampSupply * xampPrice} \n
+    TOB marketcap - ${tobSupply * tobPrice} \n \n
+    BOA price isn't available yet \n
+    Supply stats last updated 8/26/2020 @ 10:40 EST \n
+  `);
+})
