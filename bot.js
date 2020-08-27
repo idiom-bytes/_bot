@@ -205,7 +205,7 @@ bot.onText(/\/sites/, async (msg) => {
 });
 
 bot.onText(/\/help-burn-bot/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /release-ash /donate /help-burn-bot /chart-links . Also, code can be found here if you want to audit/contribute: gitlab.com/ssfaleads/burnbot`);
+  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /release-ash /donate /help-burn-bot /chart-links /marketcap. Also, code can be found here if you want to audit/contribute: gitlab.com/ssfaleads/burnbot`);
 });
 
 bot.onText(/\/release-ash/, async (msg) => {
