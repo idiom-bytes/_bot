@@ -236,6 +236,6 @@ XAMP supply (est): ${xampSupply}, price: $${xampUsd} \n
 TOB supply (est): ${tobSupply}, price: $${tobUsd} \n \n
 XAMP marketcap - ${Math.ceil((xampSupply * xampUsd) * 100) / 100} \n
 TOB marketcap - ${Math.ceil((tobSupply * tobUsd) * 100) / 100} \n \n
-BOA price isn't available yet \n
-Supply stats last updated 8/26/2020 @ 10:40 EST \n`);
+BOA price isn't available through coingecko yet (GET IT LISTED!) \n
+Supply stats last updated 8/26/2020 @ 10:40 EST. Prices might be delayed \n`);
 })
