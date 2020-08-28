@@ -203,7 +203,10 @@ bot.onText(/\/release-ash/, async (msg) => {
 });
 
 bot.onText(/\/chart-links/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: chartex.pro/?symbol=UNISWAP:TOB \n RATIO CHART: uniswap.info/pair/0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA`);
+  bot.sendMessage(
+    msg.chat.id,
+    `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: uniswap.vision/?ticker=UniswapV2:TOBUSDC&interval=60 \n RATIO CHART (XAMP/TOB): uniswap.vision/?ticker=UniswapV2:TOBXAMP&interval=60 \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA \n RATIO CHART (TOB/BOA): uniswap.vision/?ticker=UniswapV2:TOBBOA&interval=60 `
+  );
 });
 
 bot.onText(/\/whale/, async (msg) => {
