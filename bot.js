@@ -3,10 +3,13 @@ const CoinGecko = require('coingecko-api');
 const _ = require('lodash');
 const dotenv = require('dotenv');
 const Web3 = require('web3');
-const moment = require('moment')
+const moment = require('moment');
+const { graphql, print } = require('graphql');
+// @ts-ignore
+const uniswapSchema = require('./vendor/uniswap-v2/schema.graphql');
 dotenv.config();
 
-const TOKEN = process.env.TELEGRAM_TOKEN || 'your-api-key-here';
+const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 
@@ -203,7 +206,10 @@ bot.onText(/\/release-ash/, async (msg) => {
 });
 
 bot.onText(/\/chart-links/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: chartex.pro/?symbol=UNISWAP:TOB \n RATIO CHART: uniswap.info/pair/0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA`);
+  bot.sendMessage(
+    msg.chat.id,
+    `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: uniswap.vision/?ticker=UniswapV2:TOBUSDC&interval=60 \n RATIO CHART (XAMP/TOB): uniswap.vision/?ticker=UniswapV2:TOBXAMP&interval=60 \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA \n RATIO CHART (TOB/BOA): uniswap.vision/?ticker=UniswapV2:TOBBOA&interval=60 `
+  );
 });
 
 bot.onText(/\/whale/, async (msg) => {
@@ -231,4 +237,12 @@ XAMP marketcap - ${Math.ceil((xampSupply * xampUsd) * 100) / 100} \n
 TOB marketcap - ${Math.ceil((tobSupply * tobUsd) * 100) / 100} \n \n
 BOA price isn't available through coingecko yet (GET IT LISTED!) \n
 Supply stats last updated 8/26/2020 @ 10:40 EST. Prices might be delayed \n`);
-})
+});
+
+
+bot.onText(/\/testing/, async (msg) => {
+  console.log("graphql", graphql);
+  console.log("print", print);
+  console.log("uniswap", print(uniswapSchema));
+  bot.sendMessage(msg.chat.id, 'testing');
+});
