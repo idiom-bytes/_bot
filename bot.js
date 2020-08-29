@@ -204,7 +204,7 @@ bot.onText(/\/ratio/, async (msg) => {
 
   const TOB_BOA = pairs.TOB_BOA;
   const tobBoaRatio = numeral(Math.ceil((TOB_BOA.token1.derivedETH / TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
-  bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}`);
+  bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}\n FWIW Uniswap API is delayed on pricing...`);
 });
 
 bot.onText(/\/donate/, async (msg) => {
