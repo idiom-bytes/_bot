@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 const Web3 = require('web3');
 const moment = require('moment');
 const axios = require('axios');
+const numeral = require('numeral');
 const { graphql, print, buildSchema } = require('graphql');
 const schema = require('./vendor/uniswap-v2/schema.graphql');
 dotenv.config();
@@ -243,30 +244,54 @@ Supply stats last updated 8/26/2020 @ 10:40 EST. Prices might be delayed \n`);
 });
 
 
-bot.onText(/\/testing/, async (msg) => {
-  const queryForTobXampPair = `{
-      pairs {
+const PAIR_ADDRESS = {
+  TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
+  TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
+};
+
+const fetchPairDataFromUni = async () => {
+  const query = `{
+      TOB_XAMP: pair(id: "${PAIR_ADDRESS.TOB_XAMP}") {
         id
         token0{
           id
+          symbol
           derivedETH
         }
         token1{
           id
+          symbol
           derivedETH
         }
-      }}
+      }
+      TOB_BOA: pair(id: "${PAIR_ADDRESS.TOB_BOA}") {
+        id
+        token0{
+          id
+          symbol
+          derivedETH
+        }
+        token1{
+          id
+          symbol
+          derivedETH
+        }
+      }
+      }
     `;
   const {data} = await axios.post('https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2', {
-    query: queryForTobXampPair,
-  }); //.catch(console.log);
-  console.log('res: ', JSON.stringify(data));
-  // console.log("graphql", graphql);
-  // console.log("print", print);
-  bot.sendMessage(msg.chat.id, 'testing');
-  // TODO figure out how to query the graph....
-// https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2
-  // console.log('queryForTobXampPair: ', queryForTobXampPair);
+    query,
+  });
+  return data.data;
+}
 
-  // const result = graphql(schema, queryForTobXampPair).then(console.log);
+bot.onText(/\/testing/, async (msg) => {
+  const pairs = await fetchPairDataFromUni();
+  console.log('pairs: ', pairs);
+  const TOB_XAMP = pairs.TOB_XAMP;
+  const tobXampRatio = numeral(Math.ceil(( TOB_XAMP.token0.derivedETH / TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
+
+  const TOB_BOA = pairs.TOB_BOA;
+  const tobBoaRatio = numeral(Math.ceil((TOB_BOA.token1.derivedETH / TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
+  bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}`);
 });

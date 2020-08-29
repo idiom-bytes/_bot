@@ -19,6 +19,7 @@
     "graphql-import-node": "0.0.4",
     "moment": "^2.27.0",
     "node-telegram-bot-api": "^0.50.0",
+    "numeral": "^2.0.6",
     "web3": "^1.2.11"
   },
   "devDependencies": {
