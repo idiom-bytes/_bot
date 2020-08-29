@@ -9,6 +9,7 @@ const { graphql, print } = require('graphql');
 const uniswapSchema = require('./vendor/uniswap-v2/schema.graphql');
 dotenv.config();
 
+// TODO i should burn this key and remember prov vs dev keys lol oops
 const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
 
 const bot = new TelegramBot(TOKEN, { polling: true });
