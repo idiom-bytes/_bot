@@ -5,6 +5,7 @@ const _ = require('lodash');
 const dotenv = require('dotenv');
 const Web3 = require('web3');
 const moment = require('moment');
+const axios = require('axios');
 const { graphql, print, buildSchema } = require('graphql');
 const schema = require('./vendor/uniswap-v2/schema.graphql');
 dotenv.config();
@@ -243,24 +244,29 @@ Supply stats last updated 8/26/2020 @ 10:40 EST. Prices might be delayed \n`);
 
 
 bot.onText(/\/testing/, async (msg) => {
-  console.log("graphql", graphql);
-  console.log("print", print);
+  const queryForTobXampPair = `{
+      pairs {
+        id
+        token0{
+          id
+          derivedETH
+        }
+        token1{
+          id
+          derivedETH
+        }
+      }}
+    `;
+  const {data} = await axios.post('https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2', {
+    query: queryForTobXampPair,
+  }); //.catch(console.log);
+  console.log('res: ', JSON.stringify(data));
+  // console.log("graphql", graphql);
+  // console.log("print", print);
   bot.sendMessage(msg.chat.id, 'testing');
   // TODO figure out how to query the graph....
-  const queryForTobXampPair = buildSchema(`
-  query {
-    pair(id:"0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af") {
-      id
-      token0{
-        id
-        derivedETH
-      }
-      token1{
-        id
-        derivedETH
-      }
-    }
-  }`);
+// https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2
+  // console.log('queryForTobXampPair: ', queryForTobXampPair);
 
-  const result = graphql(schema, queryForTobXampPair).then(console.log);
+  // const result = graphql(schema, queryForTobXampPair).then(console.log);
 });
