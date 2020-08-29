@@ -155,23 +155,56 @@ bot.onText(/\/burn/, async (msg) => {
   bot.sendMessage(msg.chat.id, tobText);
 });
 
-bot.onText(/\/ratio/, async (msg) => {
-  console.log('testing auto deploy works...');
-  console.log('RATIO CALLED: ', msg);
-  // TODO(jc): wire up uniswap pricing info to get real time ratio
-  // TODO(jc): add BOA/TOB ratio
-  // TODO fetch directly from uniswap so it has real time ratio pricing. coingecko seems delayed!!!!!
-  const CoinGeckoClient = new CoinGecko();
-  const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
-  const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
+const PAIR_ADDRESS = {
+  TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
+  TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
+};
 
-  bot.sendMessage(msg.chat.id, `Ratio is based from Coingecko market data.. so it might be a little delayed.`);
-  const xampUsd = xampPrice.market_data.current_price.usd;
-  const tobUsd = tobPrice.market_data.current_price.usd;
-  bot.sendMessage(msg.chat.id, `XAMP/TOB USD: ${Math.ceil((tobUsd / xampUsd) * 100) / 100}`);
-  const xampETH = xampPrice.market_data.current_price.eth;
-  const tobETH = tobPrice.market_data.current_price.eth;
-  bot.sendMessage(msg.chat.id, `XAMP/TOB ETH: ${Math.ceil((tobETH / xampETH) * 100) / 100}`);
+const fetchPairDataFromUni = async () => {
+  const query = `{
+      TOB_XAMP: pair(id: "${PAIR_ADDRESS.TOB_XAMP}") {
+        id
+        token0{
+          id
+          symbol
+          derivedETH
+        }
+        token1{
+          id
+          symbol
+          derivedETH
+        }
+      }
+      TOB_BOA: pair(id: "${PAIR_ADDRESS.TOB_BOA}") {
+        id
+        token0{
+          id
+          symbol
+          derivedETH
+        }
+        token1{
+          id
+          symbol
+          derivedETH
+        }
+      }
+      }
+    `;
+  const {data} = await axios.post('https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2', {
+    query,
+  });
+  return data.data;
+}
+
+bot.onText(/\/ratio/, async (msg) => {
+  const pairs = await fetchPairDataFromUni();
+  console.log('pairs: ', pairs);
+  const TOB_XAMP = pairs.TOB_XAMP;
+  const tobXampRatio = numeral(Math.ceil(( TOB_XAMP.token0.derivedETH / TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
+
+  const TOB_BOA = pairs.TOB_BOA;
+  const tobBoaRatio = numeral(Math.ceil((TOB_BOA.token1.derivedETH / TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
+  bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}`);
 });
 
 bot.onText(/\/donate/, async (msg) => {
@@ -240,55 +273,6 @@ BOA price isn't available through coingecko yet (GET IT LISTED!) \n
 Supply stats last updated 8/26/2020 @ 10:40 EST. Prices might be delayed \n`);
 });
 
-
-const PAIR_ADDRESS = {
-  TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
-  TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
-};
-
-const fetchPairDataFromUni = async () => {
-  const query = `{
-      TOB_XAMP: pair(id: "${PAIR_ADDRESS.TOB_XAMP}") {
-        id
-        token0{
-          id
-          symbol
-          derivedETH
-        }
-        token1{
-          id
-          symbol
-          derivedETH
-        }
-      }
-      TOB_BOA: pair(id: "${PAIR_ADDRESS.TOB_BOA}") {
-        id
-        token0{
-          id
-          symbol
-          derivedETH
-        }
-        token1{
-          id
-          symbol
-          derivedETH
-        }
-      }
-      }
-    `;
-  const {data} = await axios.post('https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2', {
-    query,
-  });
-  return data.data;
-}
-
 bot.onText(/\/testing/, async (msg) => {
-  const pairs = await fetchPairDataFromUni();
-  console.log('pairs: ', pairs);
-  const TOB_XAMP = pairs.TOB_XAMP;
-  const tobXampRatio = numeral(Math.ceil(( TOB_XAMP.token0.derivedETH / TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
-
-  const TOB_BOA = pairs.TOB_BOA;
-  const tobBoaRatio = numeral(Math.ceil((TOB_BOA.token1.derivedETH / TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
-  bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}`);
+  bot.sendMessage(msg.chat.id, 'testing');
 });
