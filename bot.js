@@ -18,6 +18,9 @@ const TOKENS = {
   boa: {
     address: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
   },
+  eth: {
+    slug: 'ethereum',
+  },
   'xamp': {
     address: "0xf911a7ec46a2c6fa49193212fe4a2a9b95851c27",
     slug: 'antiample',
@@ -158,6 +161,7 @@ bot.onText(/\/burn/, async (msg) => {
 const PAIR_ADDRESS = {
   TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
   TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
+  ETH_BOA: '0xbd8061776584f4e790cdb282973c03a321d96e69',
 };
 
 const fetchPairDataFromUni = async () => {
@@ -176,6 +180,19 @@ const fetchPairDataFromUni = async () => {
         }
       }
       TOB_BOA: pair(id: "${PAIR_ADDRESS.TOB_BOA}") {
+        id
+        token0{
+          id
+          symbol
+          derivedETH
+        }
+        token1{
+          id
+          symbol
+          derivedETH
+        }
+      }
+      ETH_BOA: pair(id: "${PAIR_ADDRESS.ETH_BOA}") {
         id
         token0{
           id
@@ -255,22 +272,28 @@ bot.onText(/\/marketcap/, async (msg) => {
   const CoinGeckoClient = new CoinGecko();
   const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
   const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
+  const { data: ethPrice } = await CoinGeckoClient.coins.fetch(TOKENS.eth.slug, CG_PARAMS);
   const xampUsd = xampPrice.market_data.current_price.usd;
   const tobUsd = tobPrice.market_data.current_price.usd;
+  const ethUsd = ethPrice.market_data.current_price.usd;
 
-  // TODO(jc): use uniswap api to get BOA price in real time
+  const pairs = await fetchPairDataFromUni();
+  const ETH_BOA = pairs.ETH_BOA;
+  const boaUsd = ETH_BOA.token1.derivedETH * ethUsd;
+
   // TODO(jc): calculate supply dynamically using web3
   const xampSupply = 476121713;
   const tobSupply = 1801511;
+  const boaSupply = 95.09539754703138;
   bot.sendMessage(msg.chat.id, `
-    BILL DRUMMOND TOKENS MARKETCAP \n
-CALCULATED WITH CIRCULATING SUPPLY \n
-XAMP supply (est): ${xampSupply}, price: $${xampUsd} \n
-TOB supply (est): ${tobSupply}, price: $${tobUsd} \n \n
-XAMP marketcap - ${Math.ceil((xampSupply * xampUsd) * 100) / 100} \n
-TOB marketcap - ${Math.ceil((tobSupply * tobUsd) * 100) / 100} \n \n
-BOA price isn't available through coingecko yet (GET IT LISTED!) \n
-Supply stats last updated 8/26/2020 @ 10:40 EST. Prices might be delayed \n`);
+    BILL DRUMMOND TOKENS MARKETCAP - CALCULATED WITH CIRCULATING SUPPLY \n
+XAMP supply (est): ${numeral(xampSupply).format('0,0.00')}, price: $${numeral(xampUsd).format('0,0.0000')} \n
+TOB supply (est): ${numeral(tobSupply).format('0,0.00')}, price: $${numeral(tobUsd).format('0,0.00')} \n
+BOA supply (est): ${numeral(boaSupply).format('0,0.00')}, price: $${numeral(boaUsd).format('0,0.00')} \n \n
+XAMP marketcap - $${numeral(Math.ceil((xampSupply * xampUsd) * 100) / 100).format('0,0.00')} \n
+TOB marketcap - $${numeral(Math.ceil((tobSupply * tobUsd) * 100) / 100).format('0,0.00')} \n
+BOA marketcap - $${numeral(Math.ceil((boaSupply * boaUsd) * 100) / 100).format('0,0.00')} \n
+Supply stats last updated 8/29/2020 @ 3:45 EST. Prices might be delayed \n`);
 });
 
 bot.onText(/\/testing/, async (msg) => {
