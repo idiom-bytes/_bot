@@ -8,7 +8,7 @@
 TELEGRAM_TOKEN=KEY_HERE
 INFURA_KEY=KEY_HERE
 ```
-- To run the bot locally, run `node bot.js`
+- To run the bot locally, run `npm run start`
 
 Production
 - Deployed via heroku

@@ -1,14 +1,15 @@
+require('graphql-import-node/register');
 const TelegramBot = require('node-telegram-bot-api');
 const CoinGecko = require('coingecko-api');
 const _ = require('lodash');
 const dotenv = require('dotenv');
 const Web3 = require('web3');
 const moment = require('moment');
-const { graphql, print } = require('graphql');
-// @ts-ignore
-const uniswapSchema = require('./vendor/uniswap-v2/schema.graphql');
+const { graphql, print, buildSchema } = require('graphql');
+const schema = require('./vendor/uniswap-v2/schema.graphql');
 dotenv.config();
 
+// TODO https://t.me/testxampburnbot
 // TODO i should burn this key and remember prov vs dev keys lol oops
 const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
 
@@ -244,6 +245,22 @@ Supply stats last updated 8/26/2020 @ 10:40 EST. Prices might be delayed \n`);
 bot.onText(/\/testing/, async (msg) => {
   console.log("graphql", graphql);
   console.log("print", print);
-  console.log("uniswap", print(uniswapSchema));
   bot.sendMessage(msg.chat.id, 'testing');
+  // TODO figure out how to query the graph....
+  const queryForTobXampPair = buildSchema(`
+  query {
+    pair(id:"0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af") {
+      id
+      token0{
+        id
+        derivedETH
+      }
+      token1{
+        id
+        derivedETH
+      }
+    }
+  }`);
+
+  const result = graphql(schema, queryForTobXampPair).then(console.log);
 });
