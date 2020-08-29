@@ -11,12 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@graphql-tools/schema": "^6.1.0",
     "axios": "^0.20.0",
     "coingecko-api": "^1.0.10",
     "dotenv": "^8.2.0",
-    "graphql": "^15.3.0",
-    "graphql-import-node": "0.0.4",
     "moment": "^2.27.0",
     "node-telegram-bot-api": "^0.50.0",
     "numeral": "^2.0.6",

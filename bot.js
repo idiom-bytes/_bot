@@ -1,4 +1,3 @@
-require('graphql-import-node/register');
 const TelegramBot = require('node-telegram-bot-api');
 const CoinGecko = require('coingecko-api');
 const _ = require('lodash');
@@ -7,8 +6,6 @@ const Web3 = require('web3');
 const moment = require('moment');
 const axios = require('axios');
 const numeral = require('numeral');
-const { graphql, print, buildSchema } = require('graphql');
-const schema = require('./vendor/uniswap-v2/schema.graphql');
 dotenv.config();
 
 // TODO https://t.me/testxampburnbot
