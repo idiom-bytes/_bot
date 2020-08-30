@@ -296,6 +296,41 @@ BOA marketcap - $${numeral(Math.ceil((boaSupply * boaUsd) * 100) / 100).format('
 Supply stats last updated 8/29/2020 @ 3:45 EST. Prices might be delayed \n`);
 });
 
+const videos = [
+    "https://twitter.com/CautyMu/status/1291852448110239745",
+    "https://twitter.com/CautyMu/status/1297433915754287104",
+    "https://twitter.com/CautyMu/status/1297351795115622402",
+    "https://twitter.com/CautyMu/status/1296677337442816005",
+    "https://twitter.com/CautyMu/status/1296259257117995010",
+    "https://twitter.com/CautyMu/status/1295678669407416320",
+    "https://twitter.com/CautyMu/status/1294967223270875136",
+    "https://twitter.com/CautyMu/status/1294565407165038594",
+    "https://twitter.com/CautyMu/status/1293701172000251905",
+    "https://twitter.com/CautyMu/status/1293681620919042049",
+    "https://twitter.com/CautyMu/status/1293380668483747840",
+    "https://twitter.com/CautyMu/status/1292974024373358592",
+    "https://twitter.com/CautyMu/status/1292785510876770304",
+    "https://twitter.com/CautyMu/status/1292657051764547584",
+    "https://twitter.com/CautyMu/status/1292403852579233792",
+    "https://twitter.com/CautyMu/status/1291885796769710080",
+    "https://twitter.com/CautyMu/status/1291885473049088000",
+    "https://twitter.com/CautyMu/status/1291575007819120640",
+    "https://twitter.com/CautyMu/status/1291545838418685952",
+    "https://twitter.com/CautyMu/status/1291530112056217600"
+];
+bot.onText(/\/video/, async (msg) => {
+  bot.sendMessage(msg.chat.id, videos[Math.floor(Math.random()*videos.length)])
+});
+
+const articles = [
+    "https://medium.com/@bizarrozuck/tokens-of-babel-an-introduction-of-adaptive-commodities-94e73d246bcf",
+    "https://medium.com/@bizarrozuck/boa-the-self-cannibalizing-token-game-1ce705a3327",
+    "https://medium.com/@burn_the_state/e67c6de0bbe0"
+];
+bot.onText(/\/article/, async (msg) => {
+    bot.sendMessage(msg.chat.id, articles[Math.floor(Math.random()*articles.length)])
+});
+
 bot.onText(/\/testing/, async (msg) => {
   bot.sendMessage(msg.chat.id, 'testing');
 });
