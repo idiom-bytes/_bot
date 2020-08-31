@@ -8,12 +8,6 @@ const axios = require('axios');
 const numeral = require('numeral');
 dotenv.config();
 
-// TODO https://t.me/testxampburnbot
-// TODO i should burn this key and remember prov vs dev keys lol oops
-const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
-
-const bot = new TelegramBot(TOKEN, { polling: true });
-
 const TOKENS = {
   boa: {
     address: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
@@ -50,6 +44,12 @@ const CG_PARAMS = {
   localization: false,
   sparkline: false,
 };
+
+// TODO https://t.me/testxampburnbot
+// TODO i should burn this key and remember prov vs dev keys lol oops
+const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
+
+const bot = new TelegramBot(TOKEN, { polling: true });
 
 // TODO(jc): wire up uniswap for real time pricing info
 bot.onText(/\/burn/, async (msg) => {
@@ -93,7 +93,7 @@ bot.onText(/\/burn/, async (msg) => {
                 console.log(err);
             })
 
-        bot.sendMessage(msg.chat.id, '                           ');
+        bot.sendMessage(msg.chat.id, '         -                  ');
 
         const tobContract = new web3.eth.Contract(TOKENS.tob.rebaseAbi, TOKENS.tob.rebaseAddress);
 
