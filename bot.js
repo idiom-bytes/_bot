@@ -56,14 +56,11 @@ bot.onText(/\/burn/, async (msg) => {
     try {
         const CoinGeckoClient = new CoinGecko();
         const network = "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY;
-        console.log(network);
         const web3 = new Web3(new Web3.providers.HttpProvider(network));
         const xampContract = new web3.eth.Contract(TOKENS.xamp.rebaseAbi, TOKENS.xamp.rebaseAddress);
         xampContract.methods.lastRebase().call()
             .then(async (res) => {
-                console.log('res: ', res);
                 const lastXampRebaseDate = moment(new Date(res * 1000));
-                console.log('lastXampRebaseDate:', lastXampRebaseDate);
                 const {data: xampPrice} = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
                 const xampUsd = xampPrice.market_data.current_price.usd;
                 const now = new Date();
@@ -93,7 +90,7 @@ bot.onText(/\/burn/, async (msg) => {
                 console.log(err);
             })
 
-        bot.sendMessage(msg.chat.id, '         -                  ');
+        bot.sendMessage(msg.chat.id, '            ^_^           ');
 
         const tobContract = new web3.eth.Contract(TOKENS.tob.rebaseAbi, TOKENS.tob.rebaseAddress);
 
@@ -108,15 +105,13 @@ bot.onText(/\/burn/, async (msg) => {
         await tobContract.methods.currentExchangeRate().call()
             .then(res => {
                 tob_currentRebaseRate = (res / 10000000000).toFixed(6);
-                console.log('TOB-currentRebaseRate: ', tob_currentRebaseRate);
-            })
+            }).catch(console.log)
 
         var tob_lastRebaseRate = -1.0;
         await tobContract.methods.lastExchangeRate().call()
             .then(res => {
                 tob_lastRebaseRate = (res / 10000000000).toFixed(6);
-                console.log('TOB-lastRebaseRate: ', tob_lastRebaseRate);
-            })
+            }).catch(console.log)
 
         // STEP #2
         // TOB DATE LGOIC
@@ -125,8 +120,7 @@ bot.onText(/\/burn/, async (msg) => {
         await tobContract.methods.lastRebase().call()
             .then(async (res) => {
                 tob_lastRebaseDate = moment(new Date(res * 1000));
-                console.log('TOB-lastRebaseDate: ', tob_lastRebaseDate);
-            })
+            }).catch(console.log)
 
         // Time Between Rebases - In Seconds
         var tob_timeBetweenRebases = 0;
@@ -136,21 +130,15 @@ bot.onText(/\/burn/, async (msg) => {
                 tob_timeBetweenRebases = res;
                 tob_nextRebaseDate = tob_lastRebaseDate.clone();
 
-                console.log('TOB-timeBetweenRebase: ', tob_timeBetweenRebases);
-                console.log('TOB-nextRebaseDate: ', tob_nextRebaseDate);
-
                 tob_nextRebaseDate.add(tob_timeBetweenRebases, 'seconds');
-            })
+            }).catch(console.log)
 
         // STEP #3
         // TOB CAN REBASE LOGIC
         const tob_canRebaseDate = now.getTime() > tob_nextRebaseDate;
         const tob_canRebasePrice = tob_currentRebaseRate > tob_lastRebaseRate;
-        console.log('TOB-canRebaseDate: ', tob_canRebaseDate);
-        console.log('TOB-canRebasePrice: ', tob_canRebasePrice);
 
         const tob_canRebase = tob_canRebaseDate || tob_canRebasePrice;
-        console.log('TOB-canRebase: ', tob_canRebase);
 
         // STEP #4
         // TG Bot Text
@@ -220,7 +208,6 @@ const fetchPairDataFromUni = async () => {
 bot.onText(/\/ratio/, async (msg) => {
     try {
         const pairs = await fetchPairDataFromUni();
-        console.log('pairs: ', pairs);
         const TOB_XAMP = pairs.TOB_XAMP;
         const tobXampRatio = numeral(Math.ceil(( TOB_XAMP.token0.derivedETH / TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
 
