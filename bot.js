@@ -53,109 +53,113 @@ const CG_PARAMS = {
 
 // TODO(jc): wire up uniswap for real time pricing info
 bot.onText(/\/burn/, async (msg) => {
-  const CoinGeckoClient = new CoinGecko();
-  const network = "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY;
-  console.log(network);
-  const web3 = new Web3(new Web3.providers.HttpProvider(network));
-  const xampContract = new web3.eth.Contract(TOKENS.xamp.rebaseAbi, TOKENS.xamp.rebaseAddress);
-  xampContract.methods.lastRebase().call()
-    .then(async (res) => {
-      console.log('res: ', res);
-      const lastXampRebaseDate = moment(new Date(res * 1000));
-      console.log('lastXampRebaseDate:', lastXampRebaseDate);
-      const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
-      const xampUsd = xampPrice.market_data.current_price.usd;
-      const now = new Date();
+    try {
+        const CoinGeckoClient = new CoinGecko();
+        const network = "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY;
+        console.log(network);
+        const web3 = new Web3(new Web3.providers.HttpProvider(network));
+        const xampContract = new web3.eth.Contract(TOKENS.xamp.rebaseAbi, TOKENS.xamp.rebaseAddress);
+        xampContract.methods.lastRebase().call()
+            .then(async (res) => {
+                console.log('res: ', res);
+                const lastXampRebaseDate = moment(new Date(res * 1000));
+                console.log('lastXampRebaseDate:', lastXampRebaseDate);
+                const {data: xampPrice} = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
+                const xampUsd = xampPrice.market_data.current_price.usd;
+                const now = new Date();
 
-      // TODO - XAMP Rebase timer is still off -- Reported by @knorry
-      // TODO use momentjs to do this properly. also figure out if this is correct + next rebase time
-      const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
-      const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
+                // TODO - XAMP Rebase timer is still off -- Reported by @knorry
+                // TODO use momentjs to do this properly. also figure out if this is correct + next rebase time
+                const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
+                const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
 
-      // TODO(jc): are these TODOs still relevant?
-      // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
-      // if currentExchangeRate < lastExchangeRate on XAMP, burn
-      // Vice versa for TOB
-      const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
-      xampContract.methods.lastExchangeRate().call()
-        .then(res => {
-          const lastRebaseRate = (res / 10000000000).toFixed(6);
-          // TODO(jc): are these TODOs still relevant?
-          // TODO make sure this info is correct
-          const xampText = `
-          Current price of XAMP is: $${xampUsd}.\nLast rebase rate was $${lastRebaseRate}.\nLast burn happened ${lastXampRebaseDate.fromNow()}.\n${nextRebaseString}`;
-          bot.sendMessage(msg.chat.id, xampText);
-        })
+                // TODO(jc): are these TODOs still relevant?
+                // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
+                // if currentExchangeRate < lastExchangeRate on XAMP, burn
+                // Vice versa for TOB
+                const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
+                xampContract.methods.lastExchangeRate().call()
+                    .then(res => {
+                        const lastRebaseRate = (res / 10000000000).toFixed(6);
+                        // TODO(jc): are these TODOs still relevant?
+                        // TODO make sure this info is correct
+                        const xampText = `
+              Current price of XAMP is: $${xampUsd}.\nLast rebase rate was $${lastRebaseRate}.\nLast burn happened ${lastXampRebaseDate.fromNow()}.\n${nextRebaseString}`;
+                        bot.sendMessage(msg.chat.id, xampText);
+                    })
 
-    })
-    .catch(err => {
-      console.log(err);
-    })
+            })
+            .catch(err => {
+                console.log(err);
+            })
 
-  bot.sendMessage(msg.chat.id, '                           ');
+        bot.sendMessage(msg.chat.id, '                           ');
 
-  const tobContract = new web3.eth.Contract(TOKENS.tob.rebaseAbi, TOKENS.tob.rebaseAddress);
+        const tobContract = new web3.eth.Contract(TOKENS.tob.rebaseAbi, TOKENS.tob.rebaseAddress);
 
-  // TOB TOB TOB
-  // Today's Date
-  const now = new Date();
+        // TOB TOB TOB
+        // Today's Date
+        const now = new Date();
 
-  // STEP #1
-  // TOB PRICE LOGIC
-  // Price in USD
-  var tob_currentRebaseRate = -1.0;
-   await tobContract.methods.currentExchangeRate().call()
-    .then(res => {
-      tob_currentRebaseRate = (res / 10000000000).toFixed(6);
-      console.log('TOB-currentRebaseRate: ', tob_currentRebaseRate);
-    })
+        // STEP #1
+        // TOB PRICE LOGIC
+        // Price in USD
+        var tob_currentRebaseRate = -1.0;
+        await tobContract.methods.currentExchangeRate().call()
+            .then(res => {
+                tob_currentRebaseRate = (res / 10000000000).toFixed(6);
+                console.log('TOB-currentRebaseRate: ', tob_currentRebaseRate);
+            })
 
-  var tob_lastRebaseRate = -1.0;
-  await tobContract.methods.lastExchangeRate().call()
-    .then(res => {
-      tob_lastRebaseRate = (res / 10000000000).toFixed(6);
-      console.log('TOB-lastRebaseRate: ', tob_lastRebaseRate);
-    })
+        var tob_lastRebaseRate = -1.0;
+        await tobContract.methods.lastExchangeRate().call()
+            .then(res => {
+                tob_lastRebaseRate = (res / 10000000000).toFixed(6);
+                console.log('TOB-lastRebaseRate: ', tob_lastRebaseRate);
+            })
 
-  // STEP #2
-  // TOB DATE LGOIC
-  // Last Rebase Date - Moment Date
-  var tob_lastRebaseDate = 0
-  await tobContract.methods.lastRebase().call()
-    .then(async (res) => {
-      tob_lastRebaseDate = moment(new Date(res * 1000));
-      console.log('TOB-lastRebaseDate: ', tob_lastRebaseDate);
-    })
+        // STEP #2
+        // TOB DATE LGOIC
+        // Last Rebase Date - Moment Date
+        var tob_lastRebaseDate = 0
+        await tobContract.methods.lastRebase().call()
+            .then(async (res) => {
+                tob_lastRebaseDate = moment(new Date(res * 1000));
+                console.log('TOB-lastRebaseDate: ', tob_lastRebaseDate);
+            })
 
-  // Time Between Rebases - In Seconds
-  var tob_timeBetweenRebases = 0;
-  var tob_nextRebaseDate = null;
-  await tobContract.methods.timeBetweenRebases().call()
-    .then(async (res) => {
-      tob_timeBetweenRebases = res;
-      tob_nextRebaseDate = tob_lastRebaseDate.clone();
+        // Time Between Rebases - In Seconds
+        var tob_timeBetweenRebases = 0;
+        var tob_nextRebaseDate = null;
+        await tobContract.methods.timeBetweenRebases().call()
+            .then(async (res) => {
+                tob_timeBetweenRebases = res;
+                tob_nextRebaseDate = tob_lastRebaseDate.clone();
 
-      console.log('TOB-timeBetweenRebase: ', tob_timeBetweenRebases);
-      console.log('TOB-nextRebaseDate: ', tob_nextRebaseDate);
+                console.log('TOB-timeBetweenRebase: ', tob_timeBetweenRebases);
+                console.log('TOB-nextRebaseDate: ', tob_nextRebaseDate);
 
-      tob_nextRebaseDate.add(tob_timeBetweenRebases, 'seconds');
-    })
+                tob_nextRebaseDate.add(tob_timeBetweenRebases, 'seconds');
+            })
 
-  // STEP #3
-  // TOB CAN REBASE LOGIC
-  const tob_canRebaseDate = now.getTime() > tob_nextRebaseDate;
-  const tob_canRebasePrice = tob_currentRebaseRate > tob_lastRebaseRate;
-  console.log('TOB-canRebaseDate: ', tob_canRebaseDate);
-  console.log('TOB-canRebasePrice: ', tob_canRebasePrice);
+        // STEP #3
+        // TOB CAN REBASE LOGIC
+        const tob_canRebaseDate = now.getTime() > tob_nextRebaseDate;
+        const tob_canRebasePrice = tob_currentRebaseRate > tob_lastRebaseRate;
+        console.log('TOB-canRebaseDate: ', tob_canRebaseDate);
+        console.log('TOB-canRebasePrice: ', tob_canRebasePrice);
 
-  const tob_canRebase = tob_canRebaseDate || tob_canRebasePrice;
-  console.log('TOB-canRebase: ', tob_canRebase);
+        const tob_canRebase = tob_canRebaseDate || tob_canRebasePrice;
+        console.log('TOB-canRebase: ', tob_canRebase);
 
-  // STEP #4
-  // TG Bot Text
-  const tobText = `
-        Current price of TOB is: $${tob_currentRebaseRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
-  bot.sendMessage(msg.chat.id, tobText);
+        // STEP #4
+        // TG Bot Text
+        const tobText = `
+            Current price of TOB is: $${tob_currentRebaseRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
+        bot.sendMessage(msg.chat.id, tobText);
+    } catch (error) {
+        console.error("BOT CATCH ERROR: /burn\n",error);
+    }
 });
 
 const PAIR_ADDRESS = {
@@ -214,86 +218,125 @@ const fetchPairDataFromUni = async () => {
 }
 
 bot.onText(/\/ratio/, async (msg) => {
-  const pairs = await fetchPairDataFromUni();
-  console.log('pairs: ', pairs);
-  const TOB_XAMP = pairs.TOB_XAMP;
-  const tobXampRatio = numeral(Math.ceil(( TOB_XAMP.token0.derivedETH / TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
+    try {
+        const pairs = await fetchPairDataFromUni();
+        console.log('pairs: ', pairs);
+        const TOB_XAMP = pairs.TOB_XAMP;
+        const tobXampRatio = numeral(Math.ceil(( TOB_XAMP.token0.derivedETH / TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
 
-  const TOB_BOA = pairs.TOB_BOA;
-  const tobBoaRatio = numeral(Math.ceil((TOB_BOA.token1.derivedETH / TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
-  bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}\n FWIW Uniswap API is delayed on pricing...`);
+        const TOB_BOA = pairs.TOB_BOA;
+        const tobBoaRatio = numeral(Math.ceil((TOB_BOA.token1.derivedETH / TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
+        bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}\n FWIW Uniswap API is delayed on pricing...`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /ratio:\n",error);
+    }
 });
 
 bot.onText(/\/donate/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `donate some XAMP, ETH, BOA or TOB if you like the bot, thanks: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2`);
+    try {
+        bot.sendMessage(msg.chat.id, `donate some XAMP, ETH, BOA or TOB if you like the bot, thanks: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /donate:\n",error);
+    }
 });
 
 bot.onText(/\/contracts/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `TOB CONTRACT: ${TOKENS.tob.address}`);
-  bot.sendMessage(msg.chat.id, `XAMP CONTRACT: ${TOKENS.xamp.address}`);
-  bot.sendMessage(msg.chat.id, `BOA CONTRACT: ${TOKENS.boa.address}`);
+    try {
+        bot.sendMessage(msg.chat.id, `TOB CONTRACT: ${TOKENS.tob.address}`);
+        bot.sendMessage(msg.chat.id, `XAMP CONTRACT: ${TOKENS.xamp.address}`);
+        bot.sendMessage(msg.chat.id, `BOA CONTRACT: ${TOKENS.boa.address}`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /contracts:\n",error);
+    }
 });
 
 bot.onText(/\/rebase/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `TOB REBASE CONTRACT: ${TOKENS.tob.rebaseAddress}`);
-  bot.sendMessage(msg.chat.id, `XAMP REBASE CONTRACT: ${TOKENS.xamp.rebaseAddress}`);
+    try {
+        bot.sendMessage(msg.chat.id, `TOB REBASE CONTRACT: ${TOKENS.tob.rebaseAddress}`);
+        bot.sendMessage(msg.chat.id, `XAMP REBASE CONTRACT: ${TOKENS.xamp.rebaseAddress}`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /rebase:\n",error);
+    }
 });
 
 bot.onText(/\/sites/, async (msg) => {
-  bot.sendMessage(msg.chat.id, 'Official TOB Site: tokensofbabel.com');
-  bot.sendMessage(msg.chat.id, 'TOB Site with rebase info + ability to call rebase: tobburn.online');
-  bot.sendMessage(msg.chat.id, 'Official XAMP Site: antiample.org');
-  bot.sendMessage(msg.chat.id, 'XAMP Site with rebase info + ability to call rebase: xampburn.com');
-  bot.sendMessage(msg.chat.id, 'Official BOA Site: boa-token.webflow.io');
-
+    try {
+        bot.sendMessage(msg.chat.id, 'Official TOB Site: tokensofbabel.com');
+        bot.sendMessage(msg.chat.id, 'TOB Site with rebase info + ability to call rebase: tobburn.online');
+        bot.sendMessage(msg.chat.id, 'Official XAMP Site: antiample.org');
+        bot.sendMessage(msg.chat.id, 'XAMP Site with rebase info + ability to call rebase: xampburn.com');
+        bot.sendMessage(msg.chat.id, 'Official BOA Site: boa-token.webflow.io');
+    } catch (error) {
+        console.error("BOT CATCH ERROR /sites:\n",error);
+    }
 });
 
 bot.onText(/\/help-burn-bot/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /release-ash /donate /help-burn-bot /chart-links /marketcap /article /video. Also, code can be found here if you want to audit/contribute: gitlab.com/ssfaleads/burnbot`);
+    try {
+        bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /release-ash /donate /help-burn-bot /chart-links /marketcap /article /video. Also, code can be found here if you want to audit/contribute: gitlab.com/ssfaleads/burnbot`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /help-burn-bot:\n",error);
+    }
 });
 
 bot.onText(/\/release-ash/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `have some fucking patience!`);
+    try {
+        bot.sendMessage(msg.chat.id, `have some fucking patience!`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /release-ash:\n",error);
+    }
 });
 
 bot.onText(/\/chart-links/, async (msg) => {
-  bot.sendMessage(
-    msg.chat.id,
-    `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: uniswap.vision/?ticker=UniswapV2:TOBUSDC&interval=60 \n RATIO CHART (XAMP/TOB): uniswap.vision/?ticker=UniswapV2:TOBXAMP&interval=60 \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA \n RATIO CHART (TOB/BOA): uniswap.vision/?ticker=UniswapV2:TOBBOA&interval=60 `
-  );
+    try {
+        bot.sendMessage(
+        msg.chat.id,
+        `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: uniswap.vision/?ticker=UniswapV2:TOBUSDC&interval=60 \n RATIO CHART (XAMP/TOB): uniswap.vision/?ticker=UniswapV2:TOBXAMP&interval=60 \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA \n RATIO CHART (TOB/BOA): uniswap.vision/?ticker=UniswapV2:TOBBOA&interval=60 `
+        );
+    } catch (error) {
+        console.error("BOT CATCH ERROR /chart-links:\n",error);
+    }
 });
 
 bot.onText(/\/whale/, async (msg) => {
-  // TODO(jc): expose a whalegames endpoint to show top wallet changes in last 24hrs for xamp/tob/boa
-  bot.sendMessage(msg.chat.id, `Work in progess... visit https://whalegames.co for latest xamp/tob whale info.`);
+    try {
+        // TODO(jc): expose a whalegames endpoint to show top wallet changes in last 24hrs for xamp/tob/boa
+        bot.sendMessage(msg.chat.id, `Work in progess... visit https://whalegames.co for latest xamp/tob whale info.`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /whale:\n",error);
+    }
 });
 
 bot.onText(/\/marketcap/, async (msg) => {
-  const CoinGeckoClient = new CoinGecko();
-  const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
-  const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
-  const { data: ethPrice } = await CoinGeckoClient.coins.fetch(TOKENS.eth.slug, CG_PARAMS);
-  const xampUsd = xampPrice.market_data.current_price.usd;
-  const tobUsd = tobPrice.market_data.current_price.usd;
-  const ethUsd = ethPrice.market_data.current_price.usd;
+    try {
+        const CoinGeckoClient = new CoinGecko();
+        const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
+        const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
+        const { data: ethPrice } = await CoinGeckoClient.coins.fetch(TOKENS.eth.slug, CG_PARAMS);
+        const xampUsd = xampPrice.market_data.current_price.usd;
+        const tobUsd = tobPrice.market_data.current_price.usd;
+        const ethUsd = ethPrice.market_data.current_price.usd;
 
-  const pairs = await fetchPairDataFromUni();
-  const ETH_BOA = pairs.ETH_BOA;
-  const boaUsd = ETH_BOA.token1.derivedETH * ethUsd;
+        const pairs = await fetchPairDataFromUni();
+        const ETH_BOA = pairs.ETH_BOA;
+        const boaUsd = ETH_BOA.token1.derivedETH * ethUsd;
 
-  // TODO(jc): calculate supply dynamically using web3
-  const xampSupply = 476121713;
-  const tobSupply = 1801511;
-  const boaSupply = 95.09539754703138;
-  bot.sendMessage(msg.chat.id, `
-    BILL DRUMMOND TOKENS MARKETCAP - CALCULATED WITH CIRCULATING SUPPLY \n
-XAMP supply (est): ${numeral(xampSupply).format('0,0.00')}, price: $${numeral(xampUsd).format('0,0.0000')} \n
-TOB supply (est): ${numeral(tobSupply).format('0,0.00')}, price: $${numeral(tobUsd).format('0,0.00')} \n
-BOA supply (est): ${numeral(boaSupply).format('0,0.00')}, price: $${numeral(boaUsd).format('0,0.00')} \n \n
-XAMP marketcap - $${numeral(Math.ceil((xampSupply * xampUsd) * 100) / 100).format('0,0.00')} \n
-TOB marketcap - $${numeral(Math.ceil((tobSupply * tobUsd) * 100) / 100).format('0,0.00')} \n
-BOA marketcap - $${numeral(Math.ceil((boaSupply * boaUsd) * 100) / 100).format('0,0.00')} \n
-Supply stats last updated 8/29/2020 @ 3:45 EST. Prices might be delayed \n`);
+        // TODO(jc): calculate supply dynamically using web3
+        const xampSupply = 476121713;
+        const tobSupply = 1801511;
+        const boaSupply = 95.09539754703138;
+        bot.sendMessage(msg.chat.id, `
+        BILL DRUMMOND TOKENS MARKETCAP - CALCULATED WITH CIRCULATING SUPPLY \n
+        XAMP supply (est): ${numeral(xampSupply).format('0,0.00')}, price: $${numeral(xampUsd).format('0,0.0000')} \n
+        TOB supply (est): ${numeral(tobSupply).format('0,0.00')}, price: $${numeral(tobUsd).format('0,0.00')} \n
+        BOA supply (est): ${numeral(boaSupply).format('0,0.00')}, price: $${numeral(boaUsd).format('0,0.00')} \n \n
+        XAMP marketcap - $${numeral(Math.ceil((xampSupply * xampUsd) * 100) / 100).format('0,0.00')} \n
+        TOB marketcap - $${numeral(Math.ceil((tobSupply * tobUsd) * 100) / 100).format('0,0.00')} \n
+        BOA marketcap - $${numeral(Math.ceil((boaSupply * boaUsd) * 100) / 100).format('0,0.00')} \n
+        Supply stats last updated 8/29/2020 @ 3:45 EST. Prices might be delayed \n`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /marketcap:\n",error);
+    }
 });
 
 const videos = [
@@ -319,7 +362,11 @@ const videos = [
     "https://twitter.com/CautyMu/status/1291530112056217600"
 ];
 bot.onText(/\/video/, async (msg) => {
-  bot.sendMessage(msg.chat.id, videos[Math.floor(Math.random()*videos.length)])
+    try {
+        bot.sendMessage(msg.chat.id, videos[Math.floor(Math.random()*videos.length)])
+    } catch (error) {
+        console.error("BOT CATCH ERROR /video:\n",error);
+    }
 });
 
 const articles = [
@@ -331,9 +378,17 @@ const articles = [
     "https://cointelegraph.com/news/ethereum-whales-uniswap-token-briefly-hit-100k-but-theres-a-catch"
 ];
 bot.onText(/\/article/, async (msg) => {
-    bot.sendMessage(msg.chat.id, articles[Math.floor(Math.random()*articles.length)])
+    try {
+        bot.sendMessage(msg.chat.id, articles[Math.floor(Math.random()*articles.length)])
+    } catch (error) {
+        console.error("BOT CATCH ERROR /article:\n",error);
+    }
 });
 
 bot.onText(/\/testing/, async (msg) => {
-  bot.sendMessage(msg.chat.id, 'testing');
+    try {
+        bot.sendMessage(msg.chat.id, 'testing');
+    } catch (error) {
+        console.error("BOT CATCH ERROR /testing:\n",error);
+    }
 });
