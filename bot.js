@@ -325,7 +325,10 @@ bot.onText(/\/video/, async (msg) => {
 const articles = [
     "https://medium.com/@bizarrozuck/tokens-of-babel-an-introduction-of-adaptive-commodities-94e73d246bcf",
     "https://medium.com/@bizarrozuck/boa-the-self-cannibalizing-token-game-1ce705a3327",
-    "https://medium.com/@burn_the_state/e67c6de0bbe0"
+    "https://medium.com/@burn_the_state/e67c6de0bbe0",
+    "https://dailyhodl.com/2020/08/24/two-altcoins-built-by-mysterious-coder-are-set-to-erupt-as-bitcoin-ethereum-and-chainlink-recalibrate-predicts-top-trader/",
+    "https://thebitcoindesk.com/2020/08/these-unknown-altcoins-could-skyrocket-while-bitcoin-consolidates/",
+    "https://cointelegraph.com/news/ethereum-whales-uniswap-token-briefly-hit-100k-but-theres-a-catch"
 ];
 bot.onText(/\/article/, async (msg) => {
     bot.sendMessage(msg.chat.id, articles[Math.floor(Math.random()*articles.length)])
