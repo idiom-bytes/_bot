@@ -11,6 +11,7 @@ dotenv.config();
 const TOKENS = {
   boa: {
     address: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
+    slug: 'boa',
   },
   eth: {
     slug: 'ethereum',
@@ -216,6 +217,40 @@ bot.onText(/\/ratio/, async (msg) => {
         bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}\n FWIW Uniswap API is delayed on pricing...`);
     } catch (error) {
         console.error("BOT CATCH ERROR /ratio:\n",error);
+        // TODO fix this... bad bad bad
+        try {
+          const CoinGeckoClient = new CoinGecko();
+          const { data: xampPrice } = await CoinGeckoClient.coins.fetch(
+            TOKENS.xamp.slug,
+            CG_PARAMS
+          );
+          const { data: tobPrice } = await CoinGeckoClient.coins.fetch(
+            TOKENS.tob.slug,
+            CG_PARAMS
+          );
+          const { data: boaPrice } = await CoinGeckoClient.coins.fetch(
+            TOKENS.boa.slug,
+            CG_PARAMS
+          );
+          const xampEth = xampPrice.market_data.current_price.eth;
+          const tobEth = tobPrice.market_data.current_price.eth;
+          const boaEth = boaPrice.market_data.current_price.eth;
+          const tobXampRatio = numeral(
+            Math.ceil((tobEth / xampEth) * 100) / 100
+          ).format("0,0.00");
+
+          const tobBoaRatio = numeral(
+            Math.ceil(
+              (boaEth / tobEth) * 100
+            ) / 100
+          ).format("0,0.00");
+          bot.sendMessage(
+            msg.chat.id,
+            `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}\n FWIW using coingecko api, uniswap is down...`
+          );
+        } catch (err) {
+            console.log(err);
+        }
     }
 });
 
@@ -300,27 +335,38 @@ bot.onText(/\/marketcap/, async (msg) => {
         const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
         const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
         const { data: ethPrice } = await CoinGeckoClient.coins.fetch(TOKENS.eth.slug, CG_PARAMS);
+        const { data: boaPrice } = await CoinGeckoClient.coins.fetch(TOKENS.boa.slug, CG_PARAMS);
         const xampUsd = xampPrice.market_data.current_price.usd;
         const tobUsd = tobPrice.market_data.current_price.usd;
         const ethUsd = ethPrice.market_data.current_price.usd;
 
-        const pairs = await fetchPairDataFromUni();
-        const ETH_BOA = pairs.ETH_BOA;
-        const boaUsd = ETH_BOA.token1.derivedETH * ethUsd;
+        let boaUsd;
+        let from = 'using uniswap to get price..'
+        try {
+            const pairs = await fetchPairDataFromUni();
+            const ETH_BOA = pairs.ETH_BOA;
+            boaUsd = ETH_BOA.token1.derivedETH * ethUsd;
+        } catch (err) {
+            console.log(err);
+            let from = "using coingecko to get price..";
+            boaUsd = boaPrice.market_data.current_price.usd;
+        }
 
         // TODO(jc): calculate supply dynamically using web3
         const xampSupply = 476121713;
         const tobSupply = 1801511;
         const boaSupply = 95.09539754703138;
-        bot.sendMessage(msg.chat.id, `
-        BILL DRUMMOND TOKENS MARKETCAP - CALCULATED WITH CIRCULATING SUPPLY \n
-        XAMP supply (est): ${numeral(xampSupply).format('0,0.00')}, price: $${numeral(xampUsd).format('0,0.0000')} \n
-        TOB supply (est): ${numeral(tobSupply).format('0,0.00')}, price: $${numeral(tobUsd).format('0,0.00')} \n
-        BOA supply (est): ${numeral(boaSupply).format('0,0.00')}, price: $${numeral(boaUsd).format('0,0.00')} \n \n
-        XAMP marketcap - $${numeral(Math.ceil((xampSupply * xampUsd) * 100) / 100).format('0,0.00')} \n
-        TOB marketcap - $${numeral(Math.ceil((tobSupply * tobUsd) * 100) / 100).format('0,0.00')} \n
-        BOA marketcap - $${numeral(Math.ceil((boaSupply * boaUsd) * 100) / 100).format('0,0.00')} \n
-        Supply stats last updated 8/29/2020 @ 3:45 EST. Prices might be delayed \n`);
+        bot.sendMessage(
+          msg.chat.id,
+          `
+BILL DRUMMOND TOKENS MARKETCAP - CALCULATED WITH CIRCULATING SUPPLY \n
+XAMP supply (est): ${numeral(xampSupply).format("0,0.00")}, price: $${numeral(xampUsd).format("0,0.0000")} \n
+TOB supply (est): ${numeral(tobSupply).format("0,0.00")}, price: $${numeral(tobUsd).format("0,0.00")} \n
+BOA supply (est): ${numeral(boaSupply).format("0,0.00")}, price: $${numeral(boaUsd).format("0,0.00")} \n \n
+XAMP marketcap - $${numeral(Math.ceil(xampSupply * xampUsd * 100) / 100).format("0,0.00")} \n
+TOB marketcap - $${numeral(Math.ceil(tobSupply * tobUsd * 100) / 100).format("0,0.00")} \n
+BOA marketcap - $${numeral(Math.ceil(boaSupply * boaUsd * 100) / 100).format("0,0.00")} \n
+Supply stats last updated 8/29/2020 @ 3:45 EST. Prices might be delayed ${from} \n`);
     } catch (error) {
         console.error("BOT CATCH ERROR /marketcap:\n",error);
     }
