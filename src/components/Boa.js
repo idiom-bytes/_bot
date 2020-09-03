@@ -28,9 +28,9 @@ class Boa extends BaseCoin {
         console.log('BOA Supply: total: ', this.supplyCurrent["total"]);
 
         // SUPPLY START
-        this.supplyStart["circulating"] = this.supplyStart["total"] - this.supplyStart["taxPool"];
+        this.supplyStart["circulating"] = this.supplyStart["total"];
         // SUPPLY CURRENT
-        this.supplyCurrent["circulating"] = this.supplyCurrent["total"] - this.supplyCurrent["taxPool"];
+        this.supplyCurrent["circulating"] = this.supplyCurrent["total"];
 
         console.log(`BOA: Start Supply circulating: `, this.supplyStart["circulating"]);
         console.log(`BOA: Current Supply circulating: `, this.supplyCurrent["circulating"]);

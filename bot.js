@@ -286,8 +286,10 @@ MCAP = CIRCULATING SUPPLY * PRICE
 ----------------------------------
 XAMP Supply: ${numeral(coin_xamp.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_xamp.getPrice("usd")).format('0,0.0000')}
 XAMP MCap $${numeral(coin_xamp.supplyCurrent['circulating'] * coin_xamp.getPrice("usd")).format('0,0.00')}
+
 TOB Supply: ${numeral(coin_tob.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_tob.getPrice("usd")).format('0,0.00')}
 TOB MCap: $${numeral(coin_tob.supplyCurrent['circulating'] * coin_tob.getPrice("usd")).format('0,0.00')}
+
 BOA Supply: ${numeral(coin_boa.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
 BOA MCap: $${numeral(coin_boa.supplyCurrent['circulating'] * coin_boa.getPrice("usd")).format('0,0.00')}
 
@@ -325,9 +327,10 @@ bot.onText(/\/ratio/, async (msg) => {
             `Uniswap B.T.S. Ratios
 ETH/XAMP Ratio: ${uniswap.ratioData["ETH_XAMP"]}
 ETH/TOB Ratio: ${uniswap.ratioData["ETH_TOB"]}
+ETH/BOA Ratio: ${uniswap.ratioData["ETH_BOA"]}
+
 TOB/XAMP Ratio: ${uniswap.ratioData["TOB_XAMP"]}
 TOB/BOA Ratio: ${uniswap.ratioData["TOB_BOA"]}
-ETH/BOA Ratio: ${uniswap.ratioData["ETH_BOA"]}
 
 Warning: Prices data might be delayed`
         );
