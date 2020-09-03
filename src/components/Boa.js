@@ -76,8 +76,8 @@ class Boa extends BaseCoin {
         Tax Pool Supply: ${this.supplyCurrent["taxPool"].toFixed(6)}
         Circulating Supply: ${this.supplyCurrent["circulating"].toFixed(6)}
         Remaining Supply: ${this.supplyCurrent["remainder"].toFixed(6)}
-        Is Profitable: ${this.contractData["isProfitable"]}
-        Can Rebase: ${this.contractData["canRebase"]}`;
+        _contract.IsProfitable(): ${this.contractData["isProfitable"]}
+        _contract.CanRebase(): ${this.contractData["canRebase"]}`;
     }
 }
 

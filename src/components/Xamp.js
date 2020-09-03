@@ -107,10 +107,10 @@ class Xamp extends BaseCoin {
         To Burn: Current Price < Last Price 
         Current Price: ${this.contractData["currentExchangeRate"].toFixed(6)}
         Last Price: ${this.contractData["lastExchangeRate"].toFixed(6)}
-        Can Burn: ${this.contractData["canBurn"]}
+        _contract.CanBurn(): ${this.contractData["canBurn"]}
         Last Rebase: ${this.contractData["lastRebaseDate"].fromNow()}
         Rebase will be enabled: ${moment(this.contractData["nextRebaseDate"]).fromNow()}        
-        Can Rebase: ${this.contractData["canRebase"]}`;
+        _contract.CanRebase(): ${this.contractData["canRebase"]}`;
     }
 }
 
