@@ -30,6 +30,7 @@ class Boa extends BaseCoin {
         // SUPPLY START
         this.supplyStart["circulating"] = this.supplyStart["total"];
         // SUPPLY CURRENT
+        this.supplyCurrent["remainder"] = this.supplyCurrent["total"] - this.supplyCurrent["taxPool"];
         this.supplyCurrent["circulating"] = this.supplyCurrent["total"];
 
         console.log(`BOA: Start Supply circulating: `, this.supplyStart["circulating"]);
@@ -71,9 +72,10 @@ class Boa extends BaseCoin {
 
     getRebase() {
         return `${this.ticker}
-        To Burn: Tax Pool Supply > Circulating Supply
+        To Burn: Tax Pool > (Circulating - Tax Pool)
         Tax Pool Supply: ${this.supplyCurrent["taxPool"].toFixed(6)}
         Circulating Supply: ${this.supplyCurrent["circulating"].toFixed(6)}
+        Remaining Supply: ${this.supplyCurrent["remainder"].toFixed(6)}
         Is Profitable: ${this.contractData["isProfitable"]}
         Can Rebase: ${this.contractData["canRebase"]}`;
     }
