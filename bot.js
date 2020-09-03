@@ -137,6 +137,9 @@ Farming:
     - Tentative goal of multipool staking.
     - https://bit.ly/2EJ2oJY
 
+Farming Diagram:
+    - https://twitter.com/idiom_bytes/status/1300893617083396097
+
 Farming-to-Market Positioning:
     Deconstruction & Strategy
     TG: @eli 
