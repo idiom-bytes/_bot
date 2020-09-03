@@ -1,440 +1,423 @@
 const TelegramBot = require('node-telegram-bot-api');
 const CoinGecko = require('coingecko-api');
 const _ = require('lodash');
-const numeral = require('numeral');
-const moment = require('moment');
-
-const Uniswap = require('./src/components/Uniswap')
-const Tob = require('./src/components/Tob')
-const Xamp = require('./src/components/Xamp')
-const Boa = require('./src/components/Boa')
-
 const dotenv = require('dotenv');
+const Web3 = require('web3');
+const moment = require('moment');
+const axios = require('axios');
+const numeral = require('numeral');
 dotenv.config();
 
-const TOKEN = process.env.TELEGRAM_TOKEN || '1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk';
-const bot = new TelegramBot(TOKEN, {polling: true});
-const cgClient = new CoinGecko();
-
-const CONFIG_PARAMS = {
+const TOKENS = {
+    boa: {
+        address: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
+        slug: 'boa',
+    },
     eth: {
         slug: 'ethereum',
-        ticker: 'ETH',
     },
-    xamp: {
+    'xamp': {
+        address: "0xf911a7ec46a2c6fa49193212fe4a2a9b95851c27",
         slug: 'antiample',
-        ticker: 'XAMP',
-        decimals: 9,
-        priceDecimals: 10,
-        contractAddress: "0xf911a7ec46a2c6fa49193212fe4a2a9b95851c27",
-        contractAbi: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"epoch","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalSupply","type":"uint256"}],"name":"LogRebase","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"_owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner_","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"who","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"epoch","type":"uint256"},{"internalType":"uint256","name":"supplyDelta","type":"uint256"}],"name":"rebase","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}],
-        contractBitly: "https://bit.ly/2ESi6SK",
+        abi: [{ "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "epoch", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "totalSupply", "type": "uint256" }], "name": "LogRebase", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "Transfer", "type": "event" }, { "inputs": [], "name": "_owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "owner_", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" }], "name": "allowance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "approve", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "who", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" }], "name": "decreaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" }], "name": "increaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "epoch", "type": "uint256" }, { "internalType": "uint256", "name": "supplyDelta", "type": "uint256" }], "name": "rebase", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "totalSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "transferFrom", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }],
         rebaseAddress: '0x8cEB211A7567Cf399e1eE01E6974bf4a13b64C04',
-        rebaseAbi: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"RebaseFail","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"delta","type":"uint256"}],"name":"RebaseSuccess","type":"event"},{"inputs":[],"name":"_owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_rebase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_a","type":"address"}],"name":"canOperateRebase","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_t","type":"uint256"}],"name":"changePeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_pool","type":"address"}],"name":"changePool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"}],"name":"changeToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentExchangeRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"guarded","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastExchangeRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastRebase","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextSupplyDelta","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pool","outputs":[{"internalType":"contract IUniswapV2Pair","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rebase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"refresh","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"exchangeRate","type":"uint256"}],"name":"shouldRebase","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"timeBetweenRebases","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token","outputs":[{"internalType":"contract IRebaseableERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"tokenDecimals","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferTokenOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unguard","outputs":[],"stateMutability":"nonpayable","type":"function"}],
-        rebaseBitly: "https://bit.ly/3lJbPcO",
-        supplyStart:{
-            'total': 1000000000,
-            'vested': 80000000
-        },
-        addresses: {
-            'contract': '0xf911a7ec46a2c6fa49193212fe4a2a9b95851c27',
-            'burn': '0x0000000000000000000000000000000000000001',
-            'vested': "0x37EE8C0695b3dd657a3640d62f2AE0a8bD8Fe3cF"
-        }
+        rebaseAbi: [{ "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "uint256", "name": "oldPrice", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "newPrice", "type": "uint256" }], "name": "RebaseFail", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "uint256", "name": "oldPrice", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "newPrice", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "delta", "type": "uint256" }], "name": "RebaseSuccess", "type": "event" }, { "inputs": [], "name": "_owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "_rebase", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_a", "type": "address" }], "name": "canOperateRebase", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "_t", "type": "uint256" }], "name": "changePeriod", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_pool", "type": "address" }], "name": "changePool", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_token", "type": "address" }], "name": "changeToken", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "currentExchangeRate", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "guarded", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "lastExchangeRate", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "lastRebase", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "nextSupplyDelta", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "pool", "outputs": [{ "internalType": "contract IUniswapV2Pair", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "rebase", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "refresh", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "exchangeRate", "type": "uint256" }], "name": "shouldRebase", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "timeBetweenRebases", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "token", "outputs": [{ "internalType": "contract IRebaseableERC20", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "tokenDecimals", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferTokenOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "unguard", "outputs": [], "stateMutability": "nonpayable", "type": "function" }],
     },
     tob: {
+        address: '0x7777770f8a6632ff043c8833310e245eba9209e6',
+        abi: [{ "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "owner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "spender", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "Approval", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "uint256", "name": "epoch", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "totalSupply", "type": "uint256" }], "name": "LogRebase", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "from", "type": "address" }, { "indexed": true, "internalType": "address", "name": "to", "type": "address" }, { "indexed": false, "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "Transfer", "type": "event" }, { "inputs": [], "name": "_owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "owner_", "type": "address" }, { "internalType": "address", "name": "spender", "type": "address" }], "name": "allowance", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "approve", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "who", "type": "address" }], "name": "balanceOf", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "decimals", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "subtractedValue", "type": "uint256" }], "name": "decreaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "spender", "type": "address" }, { "internalType": "uint256", "name": "addedValue", "type": "uint256" }], "name": "increaseAllowance", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "name", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "epoch", "type": "uint256" }, { "internalType": "uint256", "name": "supplyDelta", "type": "uint256" }], "name": "rebase", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "symbol", "outputs": [{ "internalType": "string", "name": "", "type": "string" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "totalSupply", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "transfer", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "from", "type": "address" }, { "internalType": "address", "name": "to", "type": "address" }, { "internalType": "uint256", "name": "value", "type": "uint256" }], "name": "transferFrom", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }],
+        // V0.1
+        // rebaseAddress: '0x8ceb211a7567cf399e1ee01e6974bf4a13b64c04',
+        // V0.2
+        // rebaseAddress: '0x8bfd055a49a162b595530a9aaa30e9b736f5b619',
+        // V0.3 ?
+        rebaseAddress: '0x68d95dfcd2916cf76a72d1dee5b7bcecf14adb44',
+        rebaseAbi: [{ "inputs": [], "stateMutability": "nonpayable", "type": "constructor" }, { "anonymous": false, "inputs": [{ "indexed": true, "internalType": "address", "name": "previousOwner", "type": "address" }, { "indexed": true, "internalType": "address", "name": "newOwner", "type": "address" }], "name": "OwnershipTransferred", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "uint256", "name": "oldPrice", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "newPrice", "type": "uint256" }], "name": "RebaseFail", "type": "event" }, { "anonymous": false, "inputs": [{ "indexed": false, "internalType": "uint256", "name": "oldPrice", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "newPrice", "type": "uint256" }, { "indexed": false, "internalType": "uint256", "name": "delta", "type": "uint256" }], "name": "RebaseSuccess", "type": "event" }, { "inputs": [], "name": "_owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "_rebase", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_a", "type": "address" }], "name": "canOperateRebase", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "_t", "type": "uint256" }], "name": "changePeriod", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_pool", "type": "address" }], "name": "changePool", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "_token", "type": "address" }], "name": "changeToken", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "currentExchangeRate", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "guarded", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "lastExchangeRate", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "lastRebase", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "nextSupplyDelta", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [{ "internalType": "address", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "pool", "outputs": [{ "internalType": "contract IUniswapV2Pair", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "rebase", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "refresh", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "renounceOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "uint256", "name": "exchangeRate", "type": "uint256" }], "name": "shouldRebase", "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "timeBetweenRebases", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "token", "outputs": [{ "internalType": "contract IRebaseableERC20", "name": "", "type": "address" }], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "tokenDecimals", "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }], "stateMutability": "view", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [{ "internalType": "address", "name": "newOwner", "type": "address" }], "name": "transferTokenOwnership", "outputs": [], "stateMutability": "nonpayable", "type": "function" }, { "inputs": [], "name": "unguard", "outputs": [], "stateMutability": "nonpayable", "type": "function" }],
         slug: 'tokens-of-babel',
-        ticker: 'TOB',
-        decimals: 18,
-        priceDecimals: 10,
-        contractAddress: '0x7777770f8a6632ff043c8833310e245eba9209e6',
-        contractAbi: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"epoch","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"totalSupply","type":"uint256"}],"name":"LogRebase","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"_owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner_","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"who","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"epoch","type":"uint256"},{"internalType":"uint256","name":"supplyDelta","type":"uint256"}],"name":"rebase","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}],
-        contractBitly: "https://bit.ly/2YWbZnA",
-        rebaseAddress: '0x68D95Dfcd2916cf76a72d1dEe5b7BcEcf14aDb44',
-        rebaseAbi: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"RebaseFail","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"oldPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"delta","type":"uint256"}],"name":"RebaseSuccess","type":"event"},{"inputs":[],"name":"_owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_rebase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_a","type":"address"}],"name":"canOperateRebase","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"_t","type":"uint256"}],"name":"changePeriod","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_pool","type":"address"}],"name":"changePool","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_token","type":"address"}],"name":"changeToken","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"currentExchangeRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"guarded","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastExchangeRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"lastRebase","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"nextSupplyDelta","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"pool","outputs":[{"internalType":"contract IUniswapV2Pair","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"rebase","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"refresh","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"exchangeRate","type":"uint256"}],"name":"shouldRebase","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"timeBetweenRebases","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"token","outputs":[{"internalType":"contract IRebaseableERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"tokenDecimals","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferTokenOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"unguard","outputs":[],"stateMutability":"nonpayable","type":"function"}],
-        rebaseBitly: "https://bit.ly/3bhcGN8",
-        supplyStart:{
-            'total': 4012101,
-            'burn': 2000000,
-            'vested1': 541633.64,
-            'vested2': 60181.52
-        },
-        addresses: {
-            'contract': "0x7777770f8a6632ff043c8833310e245eba9209e6",
-            'burn': "0x0000000000000000000000000000000000000001",
-            'vested1': "0xA44CC80840F205Fb2Bf001765c012476766faE13",
-            'vested2': "0x3474eA3E41372EfECBdC1B41A3c92df293370aa8"
-        },
-        websites: {
-            official: 'https://tokensofbabel.com/',
-            burn: 'https://tobburn.com/'
-        }
-    },
-    boa: {
-        slug: 'boa',
-        ticker: 'BOA',
-        decimals: 18,
-        priceDecimals: 10,
-        contractAddress: "0xf9c36c7ad7fa0f0862589c919830268d1a2581a1",
-        contractAbi: [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"_owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_addr","type":"address"}],"name":"addToWhitelist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"},{"internalType":"address","name":"","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"is_profitable","outputs":[{"internalType":"bool","name":"_profitable","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"numberRedeemed","outputs":[{"internalType":"uint256","name":"profit","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"redeem","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_addr","type":"address"}],"name":"removeFromWhitelist","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalPooled","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"whitelist","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}],
-        contractBitly: "https://bit.ly/2DlC9Zr",
-        rebaseAddress: null,
-        rebaseAbi: null,
-
-        // TODO: Add vesting distribution to calculations
-        supplyStart:{
-            'total': 100,
-            'taxPool': 50,
-            'circulating': 50
-        },
-        addresses: {
-            'contract': '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
-            'burn': '0x0000000000000000000000000000000000000000',
-            'creator': "0xe41e5fa65d197afa059edce5225c1da2a01a361c"
-        }
-    },
-    charts:
-        `Uniswap.Vision & Chartex:
-        XAMP/USD CHART: https://bit.ly/3lC1box
-        XAMP/ETH CHART: https://bit.ly/34QC0IO
-        TOB/USD CHART: https://bit.ly/34Uy0XG
-        TOB/ETH CHART: https://bit.ly/2QKzonF
-        BOA/USD CHART: https://bit.ly/32QdIf8 
-        RATIO TOB/XAMP: https://bit.ly/3gQOhiK 
-        RATIO TOB/BOA: https://bit.ly/3hRR3W6`,
-    whalegames:
-        `B.T.S. Leaderboard:
-        https://whalegames.co 
-        Study top Xamp/Tob whale activity.`,
-    websites:
-        `Official Sites
-        XAMP Official: https://antiaple.org/
-        TOB Official: https://tokensofbabel.com/
-        BOA Official: https://https://boa-token.webflow.io/
-            
-Community Sites
-        TOB Burn: https://tobburn.com/
-        XAMP Burn: https://www.xampburn.com/
-        Whale Games: http://whalegames.co/`,
-    donate:
-        `We welcome donations of XAMP, TOB, BOA or ETH.
-        > Our goal is to build, not to spend.
-        > All donations used to further development.
-        > Community Devs: @jaycee @idiom @geezy
-        
-Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
-Tip Link: https://bit.ly/2QPUjWk`,
-    motd:
-        `Message of the Week:
-        
-ASH:
-    - ETA 5 Days ~ 3 Weeks (from Aug 31)
-    - Be patient. No official date.
-    - Latest article: https://bit.ly/31IQwjG        
-
-Farming:
-    - Team is taking measured steps.
-    - Tentative goal of multipool staking.
-    - https://bit.ly/2EJ2oJY
-
-Farming-to-Market Positioning:
-    Deconstruction & Strategy
-    TG: @eli 
-    https://docs.google.com/document/d/1DgrLf9nYXCbL1-b1xIbjl_bh4W2Da1GdIO7lFzzbwWs/edit?usp=sharing\
-
-@jayceee @idiom @geezy for updates.
-Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
-Tip Link: https://bit.ly/2QPUjWk`,
-    articles: { // Implemented it this way so we can
-        "Papers" : "",
-        "ASH Paper: ": "https://bit.ly/31IQwjG", //https://medium.com/@burn_the_state/e67c6de0bbe0"
-        "TOB Paper: ": "https://bit.ly/2ER9vzO", //https://medium.com/@bizarrozuck/tokens-of-babel-an-introduction-of-adaptive-commodities-94e73d246bcf
-        "BOA Paper: ": "https://bit.ly/3gJDBSX", //https://medium.com/@bizarrozuck/boa-the-self-cannibalizing-token-game-1ce705a3327
-        "\nArticles" : "",
-        "Josh Rager: ": "https://bit.ly/2YSwLnZ", //https://dailyhodl.com/2020/08/30/after-riding-yfi-108000-tidal-wave-bitcoin-analyst-josh-rager-bullish-on-five-crypto-assets/",
-        "Mysterious Coder: https: ": "https://bit.ly/31LZAEo", //https://dailyhodl.com/2020/08/24/two-altcoins-built-by-mysterious-coder-are-set-to-erupt-as-bitcoin-ethereum-and-chainlink-recalibrate-predicts-top-trader/",
-        "Unknown Alts could Rocket: ": "https://bit.ly/3hLraHN", //https://thebitcoindesk.com/2020/08/these-unknown-altcoins-could-skyrocket-while-bitcoin-consolidates/",
-        "Boa hits $100k: ": "https://bit.ly/3gL18TI" //https://cointelegraph.com/news/ethereum-whales-uniswap-token-briefly-hit-100k-but-theres-a-catch`
-    },
-    videos: [
-        "https://twitter.com/CautyMu/status/1301301435930349575",
-        "https://twitter.com/CautyMu/status/1300670663825354754",
-        "https://twitter.com/CautyMu/status/1291852448110239745",
-        "https://twitter.com/CautyMu/status/1297433915754287104",
-        "https://twitter.com/CautyMu/status/1297351795115622402",
-        "https://twitter.com/CautyMu/status/1296677337442816005",
-        "https://twitter.com/CautyMu/status/1296259257117995010",
-        "https://twitter.com/CautyMu/status/1295678669407416320",
-        "https://twitter.com/CautyMu/status/1294967223270875136",
-        "https://twitter.com/CautyMu/status/1294565407165038594",
-        "https://twitter.com/CautyMu/status/1293701172000251905",
-        "https://twitter.com/CautyMu/status/1293681620919042049",
-        "https://twitter.com/CautyMu/status/1293380668483747840",
-        "https://twitter.com/CautyMu/status/1292974024373358592",
-        "https://twitter.com/CautyMu/status/1292785510876770304",
-        "https://twitter.com/CautyMu/status/1292657051764547584",
-        "https://twitter.com/CautyMu/status/1292403852579233792",
-        "https://twitter.com/CautyMu/status/1291885796769710080",
-        "https://twitter.com/CautyMu/status/1291885473049088000",
-        "https://twitter.com/CautyMu/status/1291575007819120640",
-        "https://twitter.com/CautyMu/status/1291545838418685952",
-        "https://twitter.com/CautyMu/status/1291530112056217600"
-    ],
-    github:
-        `Audit & contribute to the bot here:
-        
-gitlab.com/ssfaleads/burnbot`,
-    CG_PARAMS: {
-        market_data: true,
-        tickers: false,
-        community_data: false,
-        developer_data: false,
-        localization: false,
-        sparkline: false,
-    },
-    UNI_PAIR_ADDRESSES : {
-        ETH_XAMP: '0x6c35c40447e8011a63ab05f088fa7cd914d66904',
-        ETH_TOB: '0x7844c04b043b51dc45bdf59ee2de53e7686865ff',
-        TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
-        TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
-        ETH_BOA: '0xbd8061776584f4e790cdb282973c03a321d96e69'
     }
 }
 
+const CG_PARAMS = {
+    market_data: true,
+    tickers: false,
+    community_data: false,
+    developer_data: false,
+    localization: false,
+    sparkline: false,
+};
 
+// TODO https://t.me/testxampburnbot
+// TODO i should burn this key and remember prov vs dev keys lol oops
+const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
 
-// BOT BACKGROUND FUNCTIONALITY
-var uniswap = new Uniswap(CONFIG_PARAMS);
-var coin_xamp = new Xamp(CONFIG_PARAMS.xamp, cgClient, uniswap.pairData);
-var coin_tob = new Tob(CONFIG_PARAMS.tob, cgClient, uniswap.pairData);
-var coin_boa = new Boa(CONFIG_PARAMS.boa, cgClient, uniswap.pairData);
+const bot = new TelegramBot(TOKEN, { polling: true });
 
-coin_xamp.init();
-coin_tob.init();
-coin_boa.init();
-
-// TODO: Interval-based Update
-var lastUpdate = null;
-const updateInternals = async () => {
-    if( lastUpdate === null || moment().diff(lastUpdate, 'seconds') > 10 ) {
-        await uniswap.fetchPairDataFromUni();
-        await coin_xamp.update();
-        await coin_tob.update();
-        await coin_boa.update();
-        lastUpdate = moment();
-    }
-}
-
-updateInternals()
-// setInterval(updateCoins, 5 * 1000);
-
-
-
-// TG BOT ENTRYPOINTS
-bot.onText(/\/help/, async (msg) => {
-    try {
-        bot.sendMessage(msg.chat.id,
-            `Commands available: 
-    /help - You are here.
-    /burn /rebase - Get coin Rebase info.
-    /websites - Get important websites. 
-    /marketcap - Get coin marketcap data.
-    /supply - Get detailed supply data.
-    /launch - Get detailed supply start data.
-    /ratio - Get coin trade ratios.
-    /whale - Access B.T.S. leaderboard.
-    /charts - Get link to charts.
-    /articles - Get all articles.
-    /contracts - Get contract addresses.
-    /motd /latest /release - Message of the Week.
-    /video - Get a random B.T.S. video.
-    /github - Audit/contribute to bot.
-    /donate - Support the community
-    
-    Community Devs: @jaycee @idiom @geezy
-    Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
-    Tip Link: https://bit.ly/2QPUjWk`
-        );
-    } catch (error) {
-        console.error("BOT CATCH ERROR /help:\n",error);
-    }
-});
-
-bot.onText(/\/supply/, async (msg) => {
-    try {
-        await updateInternals();
-        bot.sendMessage(msg.chat.id, coin_xamp.getSupplyCurrent() + '\n' + coin_tob.getSupplyCurrent() + '\n' + coin_boa.getSupplyCurrent());
-    } catch (error) {
-        console.error("BOT CATCH ERROR /supply:\n",error);
-    }
-});
-
-bot.onText(/\/launch/, async (msg) => {
-    try {
-        bot.sendMessage(msg.chat.id, coin_xamp.getSupplyStart() + '\n' + coin_tob.getSupplyStart() + '\n' + coin_boa.getSupplyStart());
-    } catch (error) {
-        console.error("BOT CATCH ERROR /launch:\n",error);
-    }
-});
-
-bot.onText(/\/marketcap/, async (msg) => {
-    try {
-        await updateInternals();
-        bot.sendMessage(msg.chat.id,
-`Burn The State
-MCAP = CIRCULATING SUPPLY * PRICE
-----------------------------------
-XAMP Supply: ${numeral(coin_xamp.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_xamp.getPrice("usd")).format('0,0.0000')}
-XAMP MCap $${numeral(coin_xamp.supplyCurrent['circulating'] * coin_xamp.getPrice("usd")).format('0,0.00')}
-TOB Supply: ${numeral(coin_tob.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_tob.getPrice("usd")).format('0,0.00')}
-TOB MCap: $${numeral(coin_tob.supplyCurrent['circulating'] * coin_tob.getPrice("usd")).format('0,0.00')}
-BOA Supply: ${numeral(coin_boa.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
-BOA MCap: $${numeral(coin_boa.supplyCurrent['circulating'] * coin_boa.getPrice("usd")).format('0,0.00')}
-
-Warning: Prices data might be delayed`
-        );
-    } catch (error) {
-        console.error("BOT CATCH ERROR /marketcap:\n",error);
-    }
-});
-
+// TODO(jc): wire up uniswap for real time pricing info
 bot.onText(/\/burn/, async (msg) => {
     try {
-        await updateInternals();
-        bot.sendMessage(msg.chat.id, coin_xamp.getRebase() + '\n' + coin_tob.getRebase() + '\n' + coin_boa.getRebase());
+        const CoinGeckoClient = new CoinGecko();
+        const network = "https://mainnet.infura.io/v3/" + process.env.INFURA_KEY;
+        const web3 = new Web3(new Web3.providers.HttpProvider(network));
+        const xampContract = new web3.eth.Contract(TOKENS.xamp.rebaseAbi, TOKENS.xamp.rebaseAddress);
+        xampContract.methods.lastRebase().call()
+            .then(async (res) => {
+                const lastXampRebaseDate = moment(new Date(res * 1000));
+                const {data: xampPrice} = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
+                const xampUsd = xampPrice.market_data.current_price.usd;
+                const now = new Date();
+
+                // TODO - XAMP Rebase timer is still off -- Reported by @knorry
+                // TODO use momentjs to do this properly. also figure out if this is correct + next rebase time
+                const canRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000) > now.getTime();
+                const tillNextRebase = new Date(new Date(res * 1000).getTime() + 60 * 60 * 12 * 1000);
+
+                // TODO(jc): are these TODOs still relevant?
+                // TODO BURN TARGET: And it's in the contract data as 'lastExchangeRate'
+                // if currentExchangeRate < lastExchangeRate on XAMP, burn
+                // Vice versa for TOB
+                const nextRebaseString = canRebase ? 'Eligble for rebase!' : `Rebase will be enabled ${moment(tillNextRebase).toNow()}`;
+                xampContract.methods.lastExchangeRate().call()
+                    .then(res => {
+                        const lastRebaseRate = (res / 10000000000).toFixed(6);
+                        // TODO(jc): are these TODOs still relevant?
+                        // TODO make sure this info is correct
+                        const xampText = `
+              Current price of XAMP is: $${xampUsd}.\nLast rebase rate was $${lastRebaseRate}.\nLast burn happened ${lastXampRebaseDate.fromNow()}.\n${nextRebaseString}`;
+                        bot.sendMessage(msg.chat.id, xampText);
+                    })
+
+            })
+            .catch(err => {
+                console.log(err);
+            })
+
+        bot.sendMessage(msg.chat.id, '            ^_^           ');
+
+        const tobContract = new web3.eth.Contract(TOKENS.tob.rebaseAbi, TOKENS.tob.rebaseAddress);
+
+        // TOB TOB TOB
+        // Today's Date
+        const now = new Date();
+
+        // STEP #1
+        // TOB PRICE LOGIC
+        // Price in USD
+        var tob_currentRebaseRate = -1.0;
+        await tobContract.methods.currentExchangeRate().call()
+            .then(res => {
+                tob_currentRebaseRate = (res / 10000000000).toFixed(6);
+            }).catch(console.log)
+
+        var tob_lastRebaseRate = -1.0;
+        await tobContract.methods.lastExchangeRate().call()
+            .then(res => {
+                tob_lastRebaseRate = (res / 10000000000).toFixed(6);
+            }).catch(console.log)
+
+        // STEP #2
+        // TOB DATE LGOIC
+        // Last Rebase Date - Moment Date
+        var tob_lastRebaseDate = 0
+        await tobContract.methods.lastRebase().call()
+            .then(async (res) => {
+                tob_lastRebaseDate = moment(new Date(res * 1000));
+            }).catch(console.log)
+
+        // Time Between Rebases - In Seconds
+        var tob_timeBetweenRebases = 0;
+        var tob_nextRebaseDate = null;
+        await tobContract.methods.timeBetweenRebases().call()
+            .then(async (res) => {
+                tob_timeBetweenRebases = res;
+                tob_nextRebaseDate = tob_lastRebaseDate.clone();
+
+                tob_nextRebaseDate.add(tob_timeBetweenRebases, 'seconds');
+            }).catch(console.log)
+
+        // STEP #3
+        // TOB CAN REBASE LOGIC
+        const tob_canRebaseDate = now.getTime() > tob_nextRebaseDate;
+        const tob_canRebasePrice = tob_currentRebaseRate > tob_lastRebaseRate;
+
+        const tob_canRebase = tob_canRebaseDate || tob_canRebasePrice;
+
+        // STEP #4
+        // TG Bot Text
+        const tobText = `
+            Current price of TOB is: $${tob_currentRebaseRate}.\nTarget burn price is $${tob_lastRebaseRate}.\nLast burn happened ${tob_lastRebaseDate.fromNow()}.\nNext burn time ${tob_nextRebaseDate.toNow()}.\nCan TOB rebase? ${tob_canRebase}.`;
+        bot.sendMessage(msg.chat.id, tobText);
     } catch (error) {
-        console.error("BOT CATCH ERROR /burn:\n",error);
+        console.error("BOT CATCH ERROR: /burn\n",error);
+    }
+});
+
+const PAIR_ADDRESS = {
+    TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
+    TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
+    ETH_BOA: '0xbd8061776584f4e790cdb282973c03a321d96e69',
+};
+
+const fetchPairDataFromUni = async () => {
+    const query = `{
+      TOB_XAMP: pair(id: "${PAIR_ADDRESS.TOB_XAMP}") {
+        id
+        token0{
+          id
+          symbol
+          derivedETH
+        }
+        token1{
+          id
+          symbol
+          derivedETH
+        }
+      }
+      TOB_BOA: pair(id: "${PAIR_ADDRESS.TOB_BOA}") {
+        id
+        token0{
+          id
+          symbol
+          derivedETH
+        }
+        token1{
+          id
+          symbol
+          derivedETH
+        }
+      }
+      ETH_BOA: pair(id: "${PAIR_ADDRESS.ETH_BOA}") {
+        id
+        token0{
+          id
+          symbol
+          derivedETH
+        }
+        token1{
+          id
+          symbol
+          derivedETH
+        }
+      }
+      }
+    `;
+    const {data} = await axios.post('https://api.thegraph.com/subgraphs/name/ianlapham/uniswapv2', {
+        query,
+    });
+    return data.data;
+}
+
+bot.onText(/\/ratio/, async (msg) => {
+    try {
+        const pairs = await fetchPairDataFromUni();
+        const TOB_XAMP = pairs.TOB_XAMP;
+        const tobXampRatio = numeral(Math.ceil(( TOB_XAMP.token0.derivedETH / TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
+
+        const TOB_BOA = pairs.TOB_BOA;
+        const tobBoaRatio = numeral(Math.ceil((TOB_BOA.token1.derivedETH / TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
+        bot.sendMessage(msg.chat.id, `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}\n FWIW Uniswap API is delayed on pricing...`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /ratio:\n",error);
+        // TODO fix this... bad bad bad
+        try {
+            const CoinGeckoClient = new CoinGecko();
+            const { data: xampPrice } = await CoinGeckoClient.coins.fetch(
+                TOKENS.xamp.slug,
+                CG_PARAMS
+            );
+            const { data: tobPrice } = await CoinGeckoClient.coins.fetch(
+                TOKENS.tob.slug,
+                CG_PARAMS
+            );
+            const { data: boaPrice } = await CoinGeckoClient.coins.fetch(
+                TOKENS.boa.slug,
+                CG_PARAMS
+            );
+            const xampEth = xampPrice.market_data.current_price.eth;
+            const tobEth = tobPrice.market_data.current_price.eth;
+            const boaEth = boaPrice.market_data.current_price.eth;
+            const tobXampRatio = numeral(
+                Math.ceil((tobEth / xampEth) * 100) / 100
+            ).format("0,0.00");
+
+            const tobBoaRatio = numeral(
+                Math.ceil(
+                    (boaEth / tobEth) * 100
+                ) / 100
+            ).format("0,0.00");
+            bot.sendMessage(
+                msg.chat.id,
+                `RATIO for TOB/XAMP: ${tobXampRatio}\nRATIO for BOA/TOB: ${tobBoaRatio}\n FWIW using coingecko api, uniswap is down...`
+            );
+        } catch (err) {
+            console.log(err);
+        }
+    }
+});
+
+bot.onText(/\/donate/, async (msg) => {
+    try {
+        bot.sendMessage(msg.chat.id, `donate some XAMP, ETH, BOA or TOB if you like the bot, thanks: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /donate:\n",error);
+    }
+});
+
+bot.onText(/\/contracts/, async (msg) => {
+    try {
+        bot.sendMessage(msg.chat.id, `TOB CONTRACT: ${TOKENS.tob.address}`);
+        bot.sendMessage(msg.chat.id, `XAMP CONTRACT: ${TOKENS.xamp.address}`);
+        bot.sendMessage(msg.chat.id, `BOA CONTRACT: ${TOKENS.boa.address}`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /contracts:\n",error);
     }
 });
 
 bot.onText(/\/rebase/, async (msg) => {
     try {
-        await updateInternals();
-        bot.sendMessage(msg.chat.id, coin_xamp.getRebase() + '\n' + coin_tob.getRebase() + '\n' + coin_boa.getRebase());
+        bot.sendMessage(msg.chat.id, `TOB REBASE CONTRACT: ${TOKENS.tob.rebaseAddress}`);
+        bot.sendMessage(msg.chat.id, `XAMP REBASE CONTRACT: ${TOKENS.xamp.rebaseAddress}`);
     } catch (error) {
         console.error("BOT CATCH ERROR /rebase:\n",error);
     }
 });
 
-bot.onText(/\/ratio/, async (msg) => {
+bot.onText(/\/sites/, async (msg) => {
     try {
-        await updateInternals();
-
-        bot.sendMessage(msg.chat.id,
-`Uniswap B.T.S. Ratios
-ETH/XAMP Ratio: ${uniswap.ratioData["ETH_XAMP"]}
-ETH/TOB Ratio: ${uniswap.ratioData["ETH_TOB"]}
-TOB/XAMP Ratio: ${uniswap.ratioData["TOB_XAMP"]}
-TOB/BOA Ratio: ${uniswap.ratioData["TOB_BOA"]}
-ETH/BOA Ratio: ${uniswap.ratioData["ETH_BOA"]}
-
-Warning: Prices data might be delayed`
-        );
+        bot.sendMessage(msg.chat.id, 'Official TOB Site: tokensofbabel.com');
+        bot.sendMessage(msg.chat.id, 'TOB Site with rebase info + ability to call rebase: tobburn.online');
+        bot.sendMessage(msg.chat.id, 'Official XAMP Site: antiample.org');
+        bot.sendMessage(msg.chat.id, 'XAMP Site with rebase info + ability to call rebase: xampburn.com');
+        bot.sendMessage(msg.chat.id, 'Official BOA Site: boa-token.webflow.io');
     } catch (error) {
-        console.error("BOT CATCH ERROR /ratio:\n",error);
+        console.error("BOT CATCH ERROR /sites:\n",error);
     }
 });
 
-bot.onText(/\/chart/, async (msg) => {
+bot.onText(/\/help-burn-bot/, async (msg) => {
     try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.charts);
+        bot.sendMessage(msg.chat.id, `Commands available: /ratio /burn /sites /contracts /rebase /whale /release-ash /donate /help-burn-bot /chart-links /marketcap /article /video. Also, code can be found here if you want to audit/contribute: gitlab.com/ssfaleads/burnbot`);
     } catch (error) {
-        console.error("BOT CATCH ERROR /chart:\n",error);
+        console.error("BOT CATCH ERROR /help-burn-bot:\n",error);
+    }
+});
+
+bot.onText(/\/release-ash/, async (msg) => {
+    try {
+        bot.sendMessage(msg.chat.id, `have some fucking patience!`);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /release-ash:\n",error);
+    }
+});
+
+bot.onText(/\/chart-links/, async (msg) => {
+    try {
+        bot.sendMessage(
+            msg.chat.id,
+            `XAMP CHART: uniswap.vision/?ticker=UniswapV2:XAMPUSDC&interval=30 \n TOB CHART: uniswap.vision/?ticker=UniswapV2:TOBUSDC&interval=60 \n RATIO CHART (XAMP/TOB): uniswap.vision/?ticker=UniswapV2:TOBXAMP&interval=60 \n BOA CHART: chartex.pro/?symbol=UNISWAP:BOA \n RATIO CHART (TOB/BOA): uniswap.vision/?ticker=UniswapV2:TOBBOA&interval=60 `
+        );
+    } catch (error) {
+        console.error("BOT CATCH ERROR /chart-links:\n",error);
     }
 });
 
 bot.onText(/\/whale/, async (msg) => {
     try {
         // TODO(jc): expose a whalegames endpoint to show top wallet changes in last 24hrs for xamp/tob/boa
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.whalegames);
+        bot.sendMessage(msg.chat.id, `Work in progess... visit https://whalegames.co for latest xamp/tob whale info.`);
     } catch (error) {
         console.error("BOT CATCH ERROR /whale:\n",error);
     }
 });
 
-bot.onText(/\/websites/, async (msg) => {
+bot.onText(/\/marketcap/, async (msg) => {
     try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.websites);
-    } catch (error) {
-        console.error("BOT CATCH ERROR /websites:\n",error);
-    }
-});
+        const CoinGeckoClient = new CoinGecko();
+        const { data: xampPrice } = await CoinGeckoClient.coins.fetch(TOKENS.xamp.slug, CG_PARAMS);
+        const { data: tobPrice } = await CoinGeckoClient.coins.fetch(TOKENS.tob.slug, CG_PARAMS);
+        const { data: ethPrice } = await CoinGeckoClient.coins.fetch(TOKENS.eth.slug, CG_PARAMS);
+        const { data: boaPrice } = await CoinGeckoClient.coins.fetch(TOKENS.boa.slug, CG_PARAMS);
+        const xampUsd = xampPrice.market_data.current_price.usd;
+        const tobUsd = tobPrice.market_data.current_price.usd;
+        const ethUsd = ethPrice.market_data.current_price.usd;
 
-bot.onText(/\/contracts/, async (msg) => {
-    try {
-        bot.sendMessage(msg.chat.id,
-        `TOB Contract: ${CONFIG_PARAMS.tob.contractBitly}
-TOB Rebase Contract: ${CONFIG_PARAMS.tob.rebaseBitly}
-XAMP Contract: ${CONFIG_PARAMS.xamp.contractBitly}
-XAMP Rebase Contract: ${CONFIG_PARAMS.xamp.rebaseBitly}
-BOA Contract: ${CONFIG_PARAMS.boa.contractBitly}`
-    );
-    } catch (error) {
-        console.error("BOT CATCH ERROR /contracts:\n",error);
-    }
-});
-
-bot.onText(/\/donate/, async (msg) => {
-    try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.donate);
-    } catch (error) {
-        console.error("BOT CATCH ERROR /donate:\n",error);
-    }
-});
-
-bot.onText(/\/motd/, async (msg) => {
-    try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.motd);
-    } catch (error) {
-        console.error("BOT CATCH ERROR /motd:\n",error);
-    }
-});
-
-bot.onText(/\/latest/, async (msg) => {
-    try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.motd);
-    } catch (error) {
-        console.error("BOT CATCH ERROR /latest:\n",error);
-    }
-});
-
-bot.onText(/\/release/, async (msg) => {
-    try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.motd);
-    } catch (error) {
-            console.error("BOT CATCH ERROR /release:\n",error);
-    }
-});
-
-bot.onText(/\/articles/, async (msg) => {
-    try {
-        var reply = ""
-        for (const [dict_key, dict_val] of Object.entries(CONFIG_PARAMS.articles)) {
-            reply += dict_key + dict_val + "\n"
+        let boaUsd;
+        let from = 'using uniswap to get price..'
+        try {
+            const pairs = await fetchPairDataFromUni();
+            const ETH_BOA = pairs.ETH_BOA;
+            boaUsd = ETH_BOA.token1.derivedETH * ethUsd;
+        } catch (err) {
+            console.log(err);
+            let from = "using coingecko to get price..";
+            boaUsd = boaPrice.market_data.current_price.usd;
         }
-        bot.sendMessage(msg.chat.id, reply);
+
+        // TODO(jc): calculate supply dynamically using web3
+        const xampSupply = 476121713;
+        const tobSupply = 1801511;
+        const boaSupply = 95.09539754703138;
+        bot.sendMessage(
+            msg.chat.id,
+            `
+BILL DRUMMOND TOKENS MARKETCAP - CALCULATED WITH CIRCULATING SUPPLY \n
+XAMP supply (est): ${numeral(xampSupply).format("0,0.00")}, price: $${numeral(xampUsd).format("0,0.0000")} \n
+TOB supply (est): ${numeral(tobSupply).format("0,0.00")}, price: $${numeral(tobUsd).format("0,0.00")} \n
+BOA supply (est): ${numeral(boaSupply).format("0,0.00")}, price: $${numeral(boaUsd).format("0,0.00")} \n \n
+XAMP marketcap - $${numeral(Math.ceil(xampSupply * xampUsd * 100) / 100).format("0,0.00")} \n
+TOB marketcap - $${numeral(Math.ceil(tobSupply * tobUsd * 100) / 100).format("0,0.00")} \n
+BOA marketcap - $${numeral(Math.ceil(boaSupply * boaUsd * 100) / 100).format("0,0.00")} \n
+Supply stats last updated 8/29/2020 @ 3:45 EST. Prices might be delayed ${from} \n`);
     } catch (error) {
-        console.error("BOT CATCH ERROR /articles:\n",error);
+        console.error("BOT CATCH ERROR /marketcap:\n",error);
     }
 });
 
+const videos = [
+    "https://twitter.com/CautyMu/status/1291852448110239745",
+    "https://twitter.com/CautyMu/status/1297433915754287104",
+    "https://twitter.com/CautyMu/status/1297351795115622402",
+    "https://twitter.com/CautyMu/status/1296677337442816005",
+    "https://twitter.com/CautyMu/status/1296259257117995010",
+    "https://twitter.com/CautyMu/status/1295678669407416320",
+    "https://twitter.com/CautyMu/status/1294967223270875136",
+    "https://twitter.com/CautyMu/status/1294565407165038594",
+    "https://twitter.com/CautyMu/status/1293701172000251905",
+    "https://twitter.com/CautyMu/status/1293681620919042049",
+    "https://twitter.com/CautyMu/status/1293380668483747840",
+    "https://twitter.com/CautyMu/status/1292974024373358592",
+    "https://twitter.com/CautyMu/status/1292785510876770304",
+    "https://twitter.com/CautyMu/status/1292657051764547584",
+    "https://twitter.com/CautyMu/status/1292403852579233792",
+    "https://twitter.com/CautyMu/status/1291885796769710080",
+    "https://twitter.com/CautyMu/status/1291885473049088000",
+    "https://twitter.com/CautyMu/status/1291575007819120640",
+    "https://twitter.com/CautyMu/status/1291545838418685952",
+    "https://twitter.com/CautyMu/status/1291530112056217600"
+];
 bot.onText(/\/video/, async (msg) => {
     try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.videos[Math.floor(Math.random()*CONFIG_PARAMS.videos.length)])
+        bot.sendMessage(msg.chat.id, videos[Math.floor(Math.random()*videos.length)])
     } catch (error) {
         console.error("BOT CATCH ERROR /video:\n",error);
     }
 });
 
-bot.onText(/\/github/, async (msg) => {
+const articles = [
+    "https://medium.com/@bizarrozuck/tokens-of-babel-an-introduction-of-adaptive-commodities-94e73d246bcf",
+    "https://medium.com/@bizarrozuck/boa-the-self-cannibalizing-token-game-1ce705a3327",
+    "https://medium.com/@burn_the_state/e67c6de0bbe0",
+    "https://dailyhodl.com/2020/08/24/two-altcoins-built-by-mysterious-coder-are-set-to-erupt-as-bitcoin-ethereum-and-chainlink-recalibrate-predicts-top-trader/",
+    "https://thebitcoindesk.com/2020/08/these-unknown-altcoins-could-skyrocket-while-bitcoin-consolidates/",
+    "https://cointelegraph.com/news/ethereum-whales-uniswap-token-briefly-hit-100k-but-theres-a-catch"
+];
+bot.onText(/\/article/, async (msg) => {
     try {
-        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.github);
+        bot.sendMessage(msg.chat.id, articles[Math.floor(Math.random()*articles.length)])
     } catch (error) {
-        console.error("BOT CATCH ERROR /github:\n",error);
+        console.error("BOT CATCH ERROR /article:\n",error);
     }
 });
 
-// Just to ping!
 bot.onText(/\/testing/, async (msg) => {
     try {
         bot.sendMessage(msg.chat.id, 'testing');
