@@ -93,6 +93,15 @@ const CONFIG_PARAMS = {
             'creator': "0xe41e5fa65d197afa059edce5225c1da2a01a361c"
         }
     },
+    ykfa: {
+        slug: 'yfka',
+        ticker: 'YFKA',
+        decimals: 18,
+        priceDecimals: 10,
+        contractAddress: "0x8d2914D7E066eB2756D4B87AcA8198619EB2CF69",
+        contractAbi: [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"_owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"boaContract","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"boaRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"calculateRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_addr","type":"address"},{"internalType":"address","name":"newAddress","type":"address"}],"name":"changeContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_addr","type":"address"},{"internalType":"uint256","name":"newRate","type":"uint256"}],"name":"changeRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endPresale","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"presaleRunning","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"purchaseWithBOA","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"purchaseWithTOB","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"purchaseWithXAMP","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_boaContract","type":"address"},{"internalType":"uint256","name":"_boaRate","type":"uint256"},{"internalType":"address","name":"_xampContract","type":"address"},{"internalType":"uint256","name":"_xampRate","type":"uint256"},{"internalType":"address","name":"_tobContract","type":"address"},{"internalType":"uint256","name":"_tobRate","type":"uint256"}],"name":"setUp","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"tobContract","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"tobRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"tuning","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"turnOffTuning","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"xampContract","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"xampRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
+        contractBitly: "https://bit.ly/2ZhYNcN"
+    },
     charts:
         `Uniswap.Vision & Chartex:
         XAMP/USD CHART: https://bit.ly/3lC1box
@@ -111,6 +120,7 @@ const CONFIG_PARAMS = {
         XAMP Official: https://antiaple.org/
         TOB Official: https://tokensofbabel.com/
         BOA Official: https://https://boa-token.webflow.io/
+        YFKA Official: https://burnthestate.com/
             
 Community Sites
         TOB Burn: https://tobburn.com/
@@ -127,15 +137,14 @@ Tip Link: https://bit.ly/2QPUjWk`,
     motd:
         `Message of the Week:
         
-ASH:
-    - ETA 5 Days ~ 3 Weeks (from Aug 31)
-    - Be patient. No official date.
-    - Latest article: https://bit.ly/31IQwjG        
+YFKA (ASH):
+    - "Yield Farming Known as Ash."
+    - YFKA is out. Presale is running.
+    - https://burnthestate.com
 
-Farming:
-    - Team is taking measured steps.
-    - Tentative goal of multipool staking.
-    - https://bit.ly/2EJ2oJY
+Airdrop:
+    - The team has triggered the airdrop.
+    - You should receive your TOB soon.
 
 Farming Diagram:
     - https://twitter.com/idiom_bytes/status/1300893617083396097
@@ -150,7 +159,7 @@ Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
 Tip Link: https://bit.ly/2QPUjWk`,
     articles: { // Implemented it this way so we can
         "Papers" : "",
-        "ASH Paper: ": "https://bit.ly/31IQwjG", //https://medium.com/@burn_the_state/e67c6de0bbe0"
+        "YFKA/ASH Paper: ": "https://bit.ly/31IQwjG", //https://medium.com/@burn_the_state/e67c6de0bbe0"
         "TOB Paper: ": "https://bit.ly/2ER9vzO", //https://medium.com/@bizarrozuck/tokens-of-babel-an-introduction-of-adaptive-commodities-94e73d246bcf
         "BOA Paper: ": "https://bit.ly/3gJDBSX", //https://medium.com/@bizarrozuck/boa-the-self-cannibalizing-token-game-1ce705a3327
         "\nArticles" : "",
@@ -374,7 +383,8 @@ bot.onText(/\/contracts/, async (msg) => {
 TOB Rebase Contract: ${CONFIG_PARAMS.tob.rebaseBitly}
 XAMP Contract: ${CONFIG_PARAMS.xamp.contractBitly}
 XAMP Rebase Contract: ${CONFIG_PARAMS.xamp.rebaseBitly}
-BOA Contract: ${CONFIG_PARAMS.boa.contractBitly}`
+BOA Contract: ${CONFIG_PARAMS.boa.contractBitly}
+YFKA Contract: ${CONFIG_PARAMS.yfka.contractBitly}`
         );
     } catch (error) {
         console.error("BOT CATCH ERROR /contracts:\n",error);
