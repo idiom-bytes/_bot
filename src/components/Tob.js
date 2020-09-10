@@ -30,6 +30,8 @@ class Tob extends BaseCoin {
     }
 
     async updateRebase() {
+        console.log("TOB: updateRebase()");
+
         // TODO - We should be able to just call core contract functions
         // TODO - canRebaseOnPrice + canRebaseOnDate + canRebaes << ctc.methods
 

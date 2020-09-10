@@ -26,6 +26,8 @@ class Xamp extends BaseCoin {
     }
 
     async updateRebase() {
+        console.log("XAMP: updateRebase()");
+
         // XAMP REBASE LOGIC
         // XAMP PRICE LOGIC
         await this.rebaseWeb3.methods.currentExchangeRate().call()

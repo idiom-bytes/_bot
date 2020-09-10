@@ -42,14 +42,11 @@ class BaseCoin {
     }
 
     async updateSupply() {
-        console.log(`Base Coin: updateSupply()`);
-
         // Get current supply from addresses
         const tokenSupplyRequest = `https://api.etherscan.io/api?module=stats&action=tokensupply&contractaddress=${this.addresses["contract"]}&apikey=${ETHERSCAN_API_KEY}`;
         await axios.get(tokenSupplyRequest)
             .then(res => {
                 this.supplyCurrent["total"] = res.data.result / Math.pow(10,this.contractDecimals)
-                console.log('${this.ticker} Current Total Supply: ', res.data.result);
             });
 
         if('burn' in this.addresses) {
@@ -57,7 +54,6 @@ class BaseCoin {
             await axios.get(burnedSupplyRequest)
                 .then(res => {
                     this.supplyCurrent["burn"] = res.data.result / Math.pow(10,this.contractDecimals)
-                    console.log('${this.ticker} Current Burned Supply:', res.data.result);
                 });
         }
 
@@ -66,14 +62,11 @@ class BaseCoin {
             await axios.get(supplyRequest)
                .then(res => {
                    this.supplyCurrent[dict_key] = res.data.result / Math.pow(10,this.contractDecimals);
-                   console.log(`{this.ticker} Current ${dict_key} Supply: `, res.data.result);
                });
         }
     }
 
     async updatePrice() {
-        console.log(`Base Coin: updateSupply()`);
-
         await this.cgClient.coins.fetch(this.slug, this.CG_PARAMS)
             .then(res => {
                 this.cg_price = res.data.market_data.current_price;
@@ -85,7 +78,6 @@ class BaseCoin {
     }
 
     async init() {
-        console.log(`${this.slug}: init()`);
         this.contractWeb3 = new web3.eth.Contract(this.contractAbi, this.contract0x);
     }
 

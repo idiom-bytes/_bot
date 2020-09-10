@@ -8,6 +8,8 @@ const Uniswap = require('./src/components/Uniswap')
 const Tob = require('./src/components/Tob')
 const Xamp = require('./src/components/Xamp')
 const Boa = require('./src/components/Boa')
+const YFKA = require('./src/components/Yfka')
+const Eth = require('./src/components/Eth')
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -21,7 +23,7 @@ const cgClient = new CoinGecko();
 const CONFIG_PARAMS = {
     eth: {
         slug: 'ethereum',
-        ticker: 'ETH',
+        ticker: 'ETH'
     },
     xamp: {
         slug: 'antiample',
@@ -95,14 +97,23 @@ const CONFIG_PARAMS = {
             'creator': "0xe41e5fa65d197afa059edce5225c1da2a01a361c"
         }
     },
-    ykfa: {
+    yfka: {
         slug: 'yfka',
         ticker: 'YFKA',
         decimals: 18,
         priceDecimals: 10,
         contractAddress: "0xd559Fba49f4773Ed9bc2860D7C0649A618aC373a",
         contractAbi: [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[],"name":"_owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"_totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"boaContract","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"boaRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"calculateRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_addr","type":"address"},{"internalType":"address","name":"newAddress","type":"address"}],"name":"changeContract","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_addr","type":"address"},{"internalType":"uint256","name":"newRate","type":"uint256"}],"name":"changeRate","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"endPresale","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"presaleRunning","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"purchaseWithBOA","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"purchaseWithTOB","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"purchaseWithXAMP","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_boaContract","type":"address"},{"internalType":"uint256","name":"_boaRate","type":"uint256"},{"internalType":"address","name":"_xampContract","type":"address"},{"internalType":"uint256","name":"_xampRate","type":"uint256"},{"internalType":"address","name":"_tobContract","type":"address"},{"internalType":"uint256","name":"_tobRate","type":"uint256"}],"name":"setUp","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"tobContract","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"tobRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"recipient","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"success","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"tuning","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"turnOffTuning","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"xampContract","outputs":[{"internalType":"contract IERC20","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"xampRate","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}],
-        contractBitly: "https://bit.ly/3bE3x1e"
+        contractBitly: "https://bit.ly/3bE3x1e",
+
+        supplyStart:{
+            'total': 0
+        },
+        addresses: {
+            'contract': '0xd559Fba49f4773Ed9bc2860D7C0649A618aC373a',
+            'burn': '0x0000000000000000000000000000000000000001',
+            'creator': '0xe41e5fa65d197afa059edce5225c1da2a01a361c'
+        }
     },
     charts:
         `Uniswap.Vision & Chartex:
@@ -111,7 +122,7 @@ const CONFIG_PARAMS = {
         TOB/USD CHART: https://bit.ly/34Uy0XG
         TOB/ETH CHART: https://bit.ly/2QKzonF
         BOA/USD CHART: https://bit.ly/32QdIf8
-        RATIO TOB/XAMP: https://bit.ly/3gQOhiK
+        RATIO TOB/XAMP: https://bit.ly/3gQOhiK  
         RATIO TOB/BOA: https://bit.ly/3hRR3W6`,
     whalegames:
         `B.T.S. Leaderboard:
@@ -223,29 +234,33 @@ gitlab.com/ssfaleads/burnbot`,
 
 // BOT BACKGROUND FUNCTIONALITY
 var uniswap = new Uniswap(CONFIG_PARAMS);
+var coin_eth = new Eth(CONFIG_PARAMS.eth, cgClient); //  uniswap.pairData these classes only take in 2 params
 var coin_xamp = new Xamp(CONFIG_PARAMS.xamp, cgClient); //  uniswap.pairData these classes only take in 2 params
 var coin_tob = new Tob(CONFIG_PARAMS.tob, cgClient); //  uniswap.pairData these classes only take in 2 params
 var coin_boa = new Boa(CONFIG_PARAMS.boa, cgClient); //  uniswap.pairData these classes only take in 2 params
+var coin_yfka = new YFKA(CONFIG_PARAMS.yfka, cgClient); //  uniswap.pairData these classes only take in 2 params
 
+coin_eth.init();
 coin_xamp.init();
 coin_tob.init();
 coin_boa.init();
+coin_yfka.init();
 
 // TODO: Interval-based Update
 var lastUpdate = null;
 const updateInternals = async () => {
     if( lastUpdate === null || moment().diff(lastUpdate, 'seconds') > 10 ) {
         await uniswap.fetchPairDataFromUni();
+        await coin_eth.update();
         await coin_xamp.update();
         await coin_tob.update();
         await coin_boa.update();
+        await coin_yfka.update();
         lastUpdate = moment();
     }
 }
 
 updateInternals()
-// setInterval(updateCoins, 5 * 1000);
-
 
 
 // TG BOT ENTRYPOINTS
@@ -282,7 +297,7 @@ bot.onText(/\/help/, async (msg) => {
 bot.onText(/\/supply/, async (msg) => {
     try {
         await updateInternals();
-        bot.sendMessage(msg.chat.id, coin_xamp.getSupplyCurrent() + '\n' + coin_tob.getSupplyCurrent() + '\n' + coin_boa.getSupplyCurrent());
+        bot.sendMessage(msg.chat.id, coin_xamp.getSupplyCurrent() + '\n' + coin_tob.getSupplyCurrent() + '\n' + coin_boa.getSupplyCurrent() + '\n' + coin_yfka.getSupplyCurrent());
     } catch (error) {
         console.error("BOT CATCH ERROR /supply:\n",error);
     }
@@ -290,7 +305,7 @@ bot.onText(/\/supply/, async (msg) => {
 
 bot.onText(/\/launch/, async (msg) => {
     try {
-        bot.sendMessage(msg.chat.id, coin_xamp.getSupplyStart() + '\n' + coin_tob.getSupplyStart() + '\n' + coin_boa.getSupplyStart());
+        bot.sendMessage(msg.chat.id, coin_xamp.getSupplyStart() + '\n' + coin_tob.getSupplyStart() + '\n' + coin_boa.getSupplyStart() + '\n' + coin_yfka.getSupplyStart());
     } catch (error) {
         console.error("BOT CATCH ERROR /launch:\n",error);
     }
@@ -299,7 +314,10 @@ bot.onText(/\/launch/, async (msg) => {
 bot.onText(/\/marketcap/, async (msg) => {
     try {
         await updateInternals();
-        // TODO YFKA
+
+        yfka_price = uniswap.ratioData["ETH_YFKA"] * coin_eth.getPrice("usd")
+        yfka_price_formatted = numeral(yfka_price).format(`0,0.00`);
+
         bot.sendMessage(msg.chat.id,
             `Burn The State
 MCAP = CIRCULATING SUPPLY * PRICE
@@ -312,6 +330,9 @@ TOB MCap: $${numeral(coin_tob.supplyCurrent['circulating'] * coin_tob.getPrice("
 
 BOA Supply: ${numeral(coin_boa.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
 BOA MCap: $${numeral(coin_boa.supplyCurrent['circulating'] * coin_boa.getPrice("usd")).format('0,0.00')}
+
+YFKA Supply: ${numeral(coin_yfka.supplyCurrent['circulating']).format('0,0.00')} | Price: $${yfka_price_formatted}
+YFKA MCap: $${numeral(coin_yfka.supplyCurrent['circulating'] * yfka_price).format('0,0.00')}
 
 Warning: Prices data might be delayed`
         );
