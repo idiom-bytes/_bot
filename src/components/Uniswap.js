@@ -1,12 +1,6 @@
 const axios = require('axios');
 const numeral = require('numeral');
 
-YAFK_PRESALE = {
-    'XAMP_YFKA': 0.0000231478550724638,
-    'TOB_YFKA': 0.00582608695652174,
-    'BOA_YFKA': 99.8550724637681,
-}
-
 class Uniswap {
     constructor(params) {
         // UNISWAP PAIRS
@@ -33,6 +27,19 @@ class Uniswap {
             }
           }
           ETH_TOB: pair(id: "${this.uniPairs.ETH_TOB}") {
+            id
+            token0{
+              id
+              symbol
+              derivedETH
+            }
+            token1{
+              id
+              symbol
+              derivedETH
+            }
+          }
+          ETH_BOA: pair(id: "${this.uniPairs.ETH_BOA}") {
             id
             token0{
               id
@@ -84,7 +91,20 @@ class Uniswap {
               derivedETH
             }
           }
-           TOB_YFKA: pair(id: "${this.uniPairs.TOB_YFKA}") {
+          XAMP_YFKA: pair(id: "${this.uniPairs.XAMP_YFKA}") {
+            id
+            token0{
+              id
+              symbol
+              derivedETH
+            }
+            token1{
+              id
+              symbol
+              derivedETH
+            }
+          }
+          TOB_YFKA: pair(id: "${this.uniPairs.TOB_YFKA}") {
             id
             token0{
               id
@@ -110,19 +130,6 @@ class Uniswap {
               derivedETH
             }
           }
-          XAMP_YFKA: pair(id: "${this.uniPairs.XAMP_YFKA}") {
-            id
-            token0{
-              id
-              symbol
-              derivedETH
-            }
-            token1{
-              id
-              symbol
-              derivedETH
-            }
-          }
           }
         `;
 
@@ -133,17 +140,18 @@ class Uniswap {
         this.uniData = data.data;
 
         const getRatio = (token0, token1) => {
-          return numeral(
-            Math.ceil((token0.derivedETH / token1.derivedETH) * 10000) /
-              10000
-          ).format("0,0.0000");
+          return (token0.derivedETH / token1.derivedETH);
         };
 
         const keys = Object.keys(this.uniData);
         keys.forEach((key) => {
           const { token0, token1 } = this.uniData[key];
-          if (['TOB_BOA', 'ETH_BOA', 'XAMP_YFKA', 'TOB_YFKA', 'BOA_YFKA'].indexOf(key) >= 0) {
-            this.ratioData[key] = getRatio(token1, token0);
+          if (['ETH_TOB', 'ETH_YFKA', 'TOB_YFKA', 'BOA_YFKA'].indexOf(key) >= 0) {
+              this.ratioData[key] = getRatio(token1, token0);
+          } else if (['XAMP_YFKA'].indexOf(key) >= 0) {
+              this.ratioData[key] = 1.0 / getRatio(token0, token1);
+          } else if (['TOB_BOA'].indexOf(key) >= 0) {
+              this.ratioData[key] = 1.0 / getRatio(token1, token0);
           } else {
             this.ratioData[key] = getRatio(token0, token1);
           }

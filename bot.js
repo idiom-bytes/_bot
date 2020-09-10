@@ -140,7 +140,7 @@ Community Sites
         XAMP Burn: https://www.xampburn.com/
         Whale Games: http://whalegames.co/`,
     donate:
-        `We welcome donations of XAMP, TOB, BOA or ETH.
+        `We welcome donations of XAMP, TOB, BOA, YFKA, or ETH.
         > Our goal is to build, not to spend.
         > All donations used to further development.
         > Community Devs: @jaycee @idiom @geezy
@@ -220,13 +220,18 @@ gitlab.com/ssfaleads/burnbot`,
     UNI_PAIR_ADDRESSES : {
         ETH_XAMP: '0x6c35c40447e8011a63ab05f088fa7cd914d66904',
         ETH_TOB: '0x7844c04b043b51dc45bdf59ee2de53e7686865ff',
-        TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
-        TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
         ETH_BOA: '0xbd8061776584f4e790cdb282973c03a321d96e69',
         ETH_YFKA: '0xc0cfb99342860725806f085046d0233fec876cd7',
+        TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
+        TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
+        XAMP_YFKA: '0xaea4d6809375bb973c8036d53db9e90970942738',
         TOB_YFKA: '0x34d0448a79f853d6e1f7ac117368c87bb7beea6b',
         BOA_YFKA: '0x5ecf87ff558f73d097eddfee35abde626c7aeab7',
-        XAMP_YFKA: '0xaea4d6809375bb973c8036d53db9e90970942738',
+    },
+    YAFK_PRESALE: {
+        XAMP_YFKA: 0.0000231478550724638,
+        TOB_YFKA: 0.00582608695652174,
+        BOA_YFKA: 99.8550724637681
     }
 }
 
@@ -315,7 +320,7 @@ bot.onText(/\/marketcap/, async (msg) => {
     try {
         await updateInternals();
 
-        yfka_price = uniswap.ratioData["ETH_YFKA"] * coin_eth.getPrice("usd")
+        yfka_price = (1.00 / uniswap.ratioData["ETH_YFKA"]) * coin_eth.getPrice("usd")
         yfka_price_formatted = numeral(yfka_price).format(`0,0.00`);
 
         bot.sendMessage(msg.chat.id,
@@ -331,7 +336,7 @@ TOB MCap: $${numeral(coin_tob.supplyCurrent['circulating'] * coin_tob.getPrice("
 BOA Supply: ${numeral(coin_boa.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
 BOA MCap: $${numeral(coin_boa.supplyCurrent['circulating'] * coin_boa.getPrice("usd")).format('0,0.00')}
 
-YFKA Price ~= (Uniswap YFKA/ETH) * ETH/USD
+YFKA Price ~= (Uniswap ETH_YFKA) * ETH/USD
 YFKA Supply: ${numeral(coin_yfka.supplyCurrent['circulating']).format('0,0.00')} | Price: $${yfka_price_formatted}
 YFKA MCap: $${numeral(coin_yfka.supplyCurrent['circulating'] * yfka_price).format('0,0.00')}
 
@@ -365,12 +370,39 @@ bot.onText(/\/ratio/, async (msg) => {
     try {
         await updateInternals();
         const keys = Object.keys(uniswap.ratioData);
-        output_data = ''
-        keys.map((key) => output_data +=`${key} Ratio: ${uniswap.ratioData[key]}\n`)
+        // output_data = ''
+        // keys.map((key) => output_data +=`${key} Ratio: ${uniswap.ratioData[key]}\n`)
+
+        xamp_yfka_roi = ((uniswap.ratioData['XAMP_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA) * 100.0;
+        tob_yfka_roi = ((uniswap.ratioData['TOB_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA) * 100.0;
+        boa_yfka_roi = ((uniswap.ratioData['BOA_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA) * 100.0;
 
         bot.sendMessage(msg.chat.id,
-            `Uniswap B.T.S. Ratios
-${output_data}
+        `Uniswap B.T.S. Ratios
+      
+--- ETH (to) BTS ---
+ETH_XAMP Ratio: ${numeral(uniswap.ratioData['ETH_XAMP']).format('0,0.0000')}
+ETH_TOB Ratio: ${numeral(uniswap.ratioData['ETH_TOB']).format('0,0.0000')}
+ETH_BOA Ratio: ${numeral(uniswap.ratioData['ETH_BOA']).format('0,0.000000000')}
+ETH_YFKA Ratio: ${numeral(uniswap.ratioData['ETH_YFKA']).format('0,0.0000')}
+
+--- TOB (to) ---
+TOB_XAMP Ratio: ${numeral(uniswap.ratioData['TOB_XAMP']).format('0,0.0000')}
+TOB_BOA Ratio: ${numeral(uniswap.ratioData['TOB_BOA']).format('0,0.000000000')}
+
+--- BTS (to) YFKA ---
+XAMP_YFKA Ratio: ${numeral(uniswap.ratioData['XAMP_YFKA']).format('0,0.000000000')} 
+Presale: ${CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA.toFixed(9)} 
+Uni Arb: ${numeral(xamp_yfka_roi).format('0,0.000000')}%
+
+TOB_YFKA Ratio: ${numeral(uniswap.ratioData['TOB_YFKA']).format('0,0.000000')}
+Presale: ${CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA.toFixed(9)} 
+Uni Arb: ${numeral(tob_yfka_roi).format('0,0.000000')}%
+
+BOA_YFKA Ratio: ${numeral(uniswap.ratioData['BOA_YFKA']).format('0,0.000000')}
+Presale: ${CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA.toFixed(6)}
+Uni Arb: ${numeral(boa_yfka_roi).format('0,0.000000')}%
+
 Warning: Prices data might be delayed`
         );
     } catch (error) {
