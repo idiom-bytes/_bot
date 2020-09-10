@@ -12,8 +12,9 @@ const Boa = require('./src/components/Boa')
 const dotenv = require('dotenv');
 dotenv.config();
 
-// '1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk' ||
-const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
+const TOKEN =
+  process.env.TELEGRAM_TOKEN ||
+  "1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk";
 const bot = new TelegramBot(TOKEN, {polling: true});
 const cgClient = new CoinGecko();
 
