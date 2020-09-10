@@ -12,7 +12,8 @@ const Boa = require('./src/components/Boa')
 const dotenv = require('dotenv');
 dotenv.config();
 
-const TOKEN = process.env.TELEGRAM_TOKEN || '1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk';
+// '1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk' ||
+const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
 const bot = new TelegramBot(TOKEN, {polling: true});
 const cgClient = new CoinGecko();
 
@@ -108,12 +109,12 @@ const CONFIG_PARAMS = {
         XAMP/ETH CHART: https://bit.ly/34QC0IO
         TOB/USD CHART: https://bit.ly/34Uy0XG
         TOB/ETH CHART: https://bit.ly/2QKzonF
-        BOA/USD CHART: https://bit.ly/32QdIf8 
-        RATIO TOB/XAMP: https://bit.ly/3gQOhiK 
+        BOA/USD CHART: https://bit.ly/32QdIf8
+        RATIO TOB/XAMP: https://bit.ly/3gQOhiK
         RATIO TOB/BOA: https://bit.ly/3hRR3W6`,
     whalegames:
         `B.T.S. Leaderboard:
-        https://whalegames.co 
+        https://whalegames.co
         Study top Xamp/Tob whale activity.`,
     websites:
         `Official Sites
@@ -121,7 +122,7 @@ const CONFIG_PARAMS = {
         TOB Official: https://tokensofbabel.com/
         BOA Official: https://https://boa-token.webflow.io/
         YFKA Official: https://burnthestate.com/
-            
+
 Community Sites
         TOB Burn: https://tobburn.com/
         XAMP Burn: https://www.xampburn.com/
@@ -131,12 +132,12 @@ Community Sites
         > Our goal is to build, not to spend.
         > All donations used to further development.
         > Community Devs: @jaycee @idiom @geezy
-        
+
 Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
 Tip Link: https://bit.ly/2QPUjWk`,
     motd:
         `Message of the Week:
-        
+
 YFKA (ASH):
     - "Yield Farming Known as Ash."
     - YFKA is out. Presale is running.
@@ -151,7 +152,7 @@ Farming Diagram:
 
 Farming-to-Market Positioning:
     Deconstruction & Strategy
-    TG: @eli 
+    TG: @eli
     https://docs.google.com/document/d/1DgrLf9nYXCbL1-b1xIbjl_bh4W2Da1GdIO7lFzzbwWs/edit?usp=sharing\
 
 @jayceee @idiom @geezy for updates.
@@ -194,7 +195,7 @@ Tip Link: https://bit.ly/2QPUjWk`,
     ],
     github:
         `Audit & contribute to the bot here:
-        
+
 gitlab.com/ssfaleads/burnbot`,
     CG_PARAMS: {
         market_data: true,
@@ -209,7 +210,11 @@ gitlab.com/ssfaleads/burnbot`,
         ETH_TOB: '0x7844c04b043b51dc45bdf59ee2de53e7686865ff',
         TOB_XAMP: '0x28bc0c76a5f8f8461be181c0cbddf715bc1d96af',
         TOB_BOA: '0x668cd043e137c81f811bb71e36e94ded77e4a5ca',
-        ETH_BOA: '0xbd8061776584f4e790cdb282973c03a321d96e69'
+        ETH_BOA: '0xbd8061776584f4e790cdb282973c03a321d96e69',
+        ETH_YFKA: '0xc0cfb99342860725806f085046d0233fec876cd7',
+        TOB_YFKA: '0x34d0448a79f853d6e1f7ac117368c87bb7beea6b',
+        BOA_YFKA: '0x5ecf87ff558f73d097eddfee35abde626c7aeab7',
+        XAMP_YFKA: '0xaea4d6809375bb973c8036d53db9e90970942738',
     }
 }
 
@@ -217,9 +222,9 @@ gitlab.com/ssfaleads/burnbot`,
 
 // BOT BACKGROUND FUNCTIONALITY
 var uniswap = new Uniswap(CONFIG_PARAMS);
-var coin_xamp = new Xamp(CONFIG_PARAMS.xamp, cgClient, uniswap.pairData);
-var coin_tob = new Tob(CONFIG_PARAMS.tob, cgClient, uniswap.pairData);
-var coin_boa = new Boa(CONFIG_PARAMS.boa, cgClient, uniswap.pairData);
+var coin_xamp = new Xamp(CONFIG_PARAMS.xamp, cgClient); //  uniswap.pairData these classes only take in 2 params
+var coin_tob = new Tob(CONFIG_PARAMS.tob, cgClient); //  uniswap.pairData these classes only take in 2 params
+var coin_boa = new Boa(CONFIG_PARAMS.boa, cgClient); //  uniswap.pairData these classes only take in 2 params
 
 coin_xamp.init();
 coin_tob.init();
@@ -245,11 +250,12 @@ updateInternals()
 // TG BOT ENTRYPOINTS
 bot.onText(/\/help/, async (msg) => {
     try {
-        bot.sendMessage(msg.chat.id,
-            `Commands available: 
+        bot.sendMessage(
+          msg.chat.id,
+          `Commands available:
     /help - You are here.
     /burn /rebase - Get coin Rebase info.
-    /websites - Get important websites. 
+    /websites - Get important websites.
     /marketcap - Get coin marketcap data.
     /supply - Get detailed supply data.
     /launch - Get detailed supply start data.
@@ -262,8 +268,8 @@ bot.onText(/\/help/, async (msg) => {
     /video - Get a random B.T.S. video.
     /github - Audit/contribute to bot.
     /donate - Support the community
-    
-    Community Devs: @jaycee @idiom @geezy
+
+    Community Devs: @idiom @geezy @jaycee
     Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
     Tip Link: https://bit.ly/2QPUjWk`
         );
@@ -292,6 +298,7 @@ bot.onText(/\/launch/, async (msg) => {
 bot.onText(/\/marketcap/, async (msg) => {
     try {
         await updateInternals();
+        // TODO YFKA
         bot.sendMessage(msg.chat.id,
             `Burn The State
 MCAP = CIRCULATING SUPPLY * PRICE
@@ -334,16 +341,17 @@ bot.onText(/\/rebase/, async (msg) => {
 bot.onText(/\/ratio/, async (msg) => {
     try {
         await updateInternals();
+// ETH/XAMP Ratio: ${uniswap.ratioData["ETH_XAMP"]}
+// ETH/TOB Ratio: ${uniswap.ratioData["ETH_TOB"]}
+// ETH/BOA Ratio: ${uniswap.ratioData["ETH_BOA"]}
 
+// TOB/XAMP Ratio: ${uniswap.ratioData["TOB_XAMP"]}
+// TOB/BOA Ratio: ${uniswap.ratioData["TOB_BOA"]}
+
+        const keys = Object.keys(uniswap.ratioData);
         bot.sendMessage(msg.chat.id,
             `Uniswap B.T.S. Ratios
-ETH/XAMP Ratio: ${uniswap.ratioData["ETH_XAMP"]}
-ETH/TOB Ratio: ${uniswap.ratioData["ETH_TOB"]}
-ETH/BOA Ratio: ${uniswap.ratioData["ETH_BOA"]}
-
-TOB/XAMP Ratio: ${uniswap.ratioData["TOB_XAMP"]}
-TOB/BOA Ratio: ${uniswap.ratioData["TOB_BOA"]}
-
+${keys.map((key) => `${key} Ratio: ${uniswap.ratioData[key]}`).join('\n')}
 Warning: Prices data might be delayed`
         );
     } catch (error) {
