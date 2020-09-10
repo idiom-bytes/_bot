@@ -331,7 +331,7 @@ TOB MCap: $${numeral(coin_tob.supplyCurrent['circulating'] * coin_tob.getPrice("
 BOA Supply: ${numeral(coin_boa.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
 BOA MCap: $${numeral(coin_boa.supplyCurrent['circulating'] * coin_boa.getPrice("usd")).format('0,0.00')}
 
-YFKA Price = (Uniswap YFKA/ETH) * ETH/USD = ~$YFKA
+YFKA Price ~= (Uniswap YFKA/ETH) * ETH/USD
 YFKA Supply: ${numeral(coin_yfka.supplyCurrent['circulating']).format('0,0.00')} | Price: $${yfka_price_formatted}
 YFKA MCap: $${numeral(coin_yfka.supplyCurrent['circulating'] * yfka_price).format('0,0.00')}
 
