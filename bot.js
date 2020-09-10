@@ -362,7 +362,7 @@ YFKA MCap: $${numeral(
           ).format("0,0.00")}
 
 
-Total BTS MCap: ${totalMarketCapString}
+Total BTS MCap: $${totalMarketCapString}
 Warning: Prices data might be delayed`
         );
     } catch (error) {
