@@ -65,7 +65,46 @@ class Uniswap {
               derivedETH
             }
           }
-          ETH_BOA: pair(id: "${this.uniPairs.ETH_BOA}") {
+          ETH_YFKA: pair(id: "${this.uniPairs.ETH_YFKA}") {
+            id
+            token0{
+              id
+              symbol
+              derivedETH
+            }
+            token1{
+              id
+              symbol
+              derivedETH
+            }
+          }
+           TOB_YFKA: pair(id: "${this.uniPairs.TOB_YFKA}") {
+            id
+            token0{
+              id
+              symbol
+              derivedETH
+            }
+            token1{
+              id
+              symbol
+              derivedETH
+            }
+          }
+          BOA_YFKA: pair(id: "${this.uniPairs.BOA_YFKA}") {
+            id
+            token0{
+              id
+              symbol
+              derivedETH
+            }
+            token1{
+              id
+              symbol
+              derivedETH
+            }
+          }
+          XAMP_YFKA: pair(id: "${this.uniPairs.XAMP_YFKA}") {
             id
             token0{
               id
@@ -87,12 +126,22 @@ class Uniswap {
         });
         this.uniData = data.data;
 
-        // I want to do the same for coingecko
-        this.ratioData["ETH_XAMP"] = numeral(Math.ceil((this.uniData.ETH_XAMP.token0.derivedETH / this.uniData.ETH_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
-        this.ratioData["ETH_TOB"] = numeral(Math.ceil((this.uniData.ETH_TOB.token0.derivedETH / this.uniData.ETH_TOB.token1.derivedETH) * 100) / 100).format('0,0.00');
-        this.ratioData["TOB_XAMP"] = numeral(Math.ceil((this.uniData.TOB_XAMP.token0.derivedETH / this.uniData.TOB_XAMP.token1.derivedETH) * 100) / 100).format('0,0.00');
-        this.ratioData["TOB_BOA"] = numeral(Math.ceil((this.uniData.TOB_BOA.token1.derivedETH / this.uniData.TOB_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
-        this.ratioData["ETH_BOA"] = numeral(Math.ceil((this.uniData.ETH_BOA.token1.derivedETH / this.uniData.ETH_BOA.token0.derivedETH) * 100) / 100).format('0,0.00');
+        const getRatio = (token0, token1) => {
+          return numeral(
+            Math.ceil((token0.derivedETH / token1.derivedETH) * 10000) /
+              10000
+          ).format("0,0.0000");
+        };
+
+        const keys = Object.keys(this.uniData);
+        keys.forEach((key) => {
+          const { token0, token1 } = this.uniData[key];
+          if (['TOB_BOA', 'ETH_BOA'].indexOf(key) >= 0) {
+            this.ratioData[key] = getRatio(token1, token0);
+          } else {
+            this.ratioData[key] = getRatio(token0, token1);
+          }
+        });
     }
 }
 
