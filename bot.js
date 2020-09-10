@@ -326,9 +326,7 @@ bot.onText(/\/marketcap/, async (msg) => {
             (coin_boa.supplyCurrent["circulating"] * coin_boa.getPrice("usd")) +
             (coin_tob.supplyCurrent["circulating"] * coin_tob.getPrice("usd")) +
             (coin_xamp.supplyCurrent['circulating'] * coin_xamp.getPrice("usd"));
-        const totalMarketCapString = numeral(totalBTSMarketCap).format(
-            "0,0.00"
-        );
+        const totalMarketCapString = numeral(totalBTSMarketCap).format("0,0.00");
 
         bot.sendMessage(
             msg.chat.id,
