@@ -1,6 +1,12 @@
 const axios = require('axios');
 const numeral = require('numeral');
 
+YAFK_PRESALE = {
+    'XAMP_YFKA': 0.0000231478550724638,
+    'TOB_YFKA': 0.00582608695652174,
+    'BOA_YFKA': 99.8550724637681,
+}
+
 class Uniswap {
     constructor(params) {
         // UNISWAP PAIRS
@@ -136,7 +142,7 @@ class Uniswap {
         const keys = Object.keys(this.uniData);
         keys.forEach((key) => {
           const { token0, token1 } = this.uniData[key];
-          if (['TOB_BOA', 'ETH_BOA'].indexOf(key) >= 0) {
+          if (['TOB_BOA', 'ETH_BOA', 'XAMP_YFKA', 'TOB_YFKA', 'BOA_YFKA'].indexOf(key) >= 0) {
             this.ratioData[key] = getRatio(token1, token0);
           } else {
             this.ratioData[key] = getRatio(token0, token1);
