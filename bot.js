@@ -14,9 +14,7 @@ const Eth = require('./src/components/Eth')
 const dotenv = require('dotenv');
 dotenv.config();
 
-const TOKEN =
-  process.env.TELEGRAM_TOKEN ||
-  "1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk";
+const TOKEN = process.env.TELEGRAM_TOKEN || "1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk";
 const bot = new TelegramBot(TOKEN, {polling: true});
 const cgClient = new CoinGecko();
 
@@ -122,7 +120,7 @@ const CONFIG_PARAMS = {
         TOB/USD CHART: https://bit.ly/34Uy0XG
         TOB/ETH CHART: https://bit.ly/2QKzonF
         BOA/USD CHART: https://bit.ly/32QdIf8
-        RATIO TOB/XAMP: https://bit.ly/3gQOhiK  
+        RATIO TOB/XAMP: https://bit.ly/3gQOhiK
         RATIO TOB/BOA: https://bit.ly/3hRR3W6`,
     whalegames:
         `B.T.S. Leaderboard:
@@ -320,26 +318,37 @@ bot.onText(/\/marketcap/, async (msg) => {
     try {
         await updateInternals();
 
-        yfka_price = (1.00 / uniswap.ratioData["ETH_YFKA"]) * coin_eth.getPrice("usd")
-        yfka_price_formatted = numeral(yfka_price).format(`0,0.00`);
+        let yfka_price = (1.0 / uniswap.ratioData["ETH_YFKA"]) * coin_eth.getPrice("usd")
+        let yfka_price_formatted = numeral(yfka_price).format(`0,0.00`);
 
-        bot.sendMessage(msg.chat.id,
+        const totalBTSMarketCap =
+            (coin_yfka.supplyCurrent["circulating"] * yfka_price) +
+            (coin_boa.supplyCurrent["circulating"] * coin_boa.getPrice("usd")) +
+            (coin_tob.supplyCurrent["circulating"] * coin_tob.getPrice("usd")) +
+            (coin_xamp.supplyCurrent['circulating'] * coin_xamp.getPrice("usd"));
+        const totalMarketCapString = numeral(totalBTSMarketCap).format(
+            "0,0.00"
+        );
+
+        bot.sendMessage(
+            msg.chat.id,
             `Burn The State
 MCAP = CIRCULATING SUPPLY * PRICE
 ----------------------------------
-XAMP Supply: ${numeral(coin_xamp.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_xamp.getPrice("usd")).format('0,0.0000')}
-XAMP MCap $${numeral(coin_xamp.supplyCurrent['circulating'] * coin_xamp.getPrice("usd")).format('0,0.00')}
+XAMP Supply: ${numeral(coin_xamp.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(coin_xamp.getPrice("usd")).format("0,0.0000")}
+XAMP MCap $${numeral(coin_xamp.supplyCurrent["circulating"] * coin_xamp.getPrice("usd")).format("0,0.00")}
 
-TOB Supply: ${numeral(coin_tob.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_tob.getPrice("usd")).format('0,0.00')}
-TOB MCap: $${numeral(coin_tob.supplyCurrent['circulating'] * coin_tob.getPrice("usd")).format('0,0.00')}
+TOB Supply: ${numeral(coin_tob.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(coin_tob.getPrice("usd")).format("0,0.00")}
+TOB MCap: $${numeral(coin_tob.supplyCurrent["circulating"] * coin_tob.getPrice("usd")).format("0,0.00")}
 
-BOA Supply: ${numeral(coin_boa.supplyCurrent['circulating']).format('0,0.00')} | Price: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
-BOA MCap: $${numeral(coin_boa.supplyCurrent['circulating'] * coin_boa.getPrice("usd")).format('0,0.00')}
+BOA Supply: ${numeral(coin_boa.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(coin_boa.getPrice("usd")).format("0,0.00")}
+BOA MCap: $${numeral(coin_boa.supplyCurrent["circulating"] * coin_boa.getPrice("usd")).format("0,0.00")}
 
-YFKA Price ~= (Uniswap ETH_YFKA) * ETH/USD
-YFKA Supply: ${numeral(coin_yfka.supplyCurrent['circulating']).format('0,0.00')} | Price: $${yfka_price_formatted}
-YFKA MCap: $${numeral(coin_yfka.supplyCurrent['circulating'] * yfka_price).format('0,0.00')}
+YFKA Price ~= (Uniswap YFKA/ETH) * ETH/USD
+YFKA Supply: ${numeral(coin_yfka.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${yfka_price_formatted}
+YFKA MCap: $${numeral(coin_yfka.supplyCurrent["circulating"] * yfka_price).format("0,0.00")}
 
+Total BTS MCap: $${totalMarketCapString}
 Warning: Prices data might be delayed`
         );
     } catch (error) {
