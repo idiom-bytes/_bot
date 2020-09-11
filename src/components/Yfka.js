@@ -12,8 +12,7 @@ class YFKA extends BaseCoin {
         this.supplyStart["circulating"] = this.supplyStart["total"];
 
         // SUPPLY CURRENT
-        this.supplyCurrent["burn"] = this.supplyCurrent["burn"];
-        this.supplyCurrent["circulating"] = this.supplyCurrent["total"] - this.supplyCurrent["burn"];
+        this.supplyCurrent["circulating"] = this.supplyCurrent["total"];
 
         console.log(`Start circulating Supply: `, this.supplyStart["circulating"]);
         console.log(`Current circulating Supply: `, this.supplyCurrent["circulating"]);
@@ -38,7 +37,6 @@ class YFKA extends BaseCoin {
     getSupplyCurrent() {
         return `${this.ticker}
         Supply Total: ${commas(this.supplyCurrent["total"].toFixed(2))}
-        Supply Burned: ${commas(this.supplyCurrent["burn"].toFixed(2))} (${((this.supplyCurrent["burn"]/this.supplyCurrent["total"])*100).toFixed(2)}%)
         Supply Circulating: ${commas(this.supplyCurrent["circulating"].toFixed(2))} (${((this.supplyCurrent["circulating"]/this.supplyCurrent["total"])*100).toFixed(2)}%)`;
     }
 }

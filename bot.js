@@ -118,7 +118,6 @@ const CONFIG_PARAMS = {
         },
         addresses: {
             'contract': '0x4086692d53262b2be0b13909d804f0491ff6ec3e',
-            'burn': '0x0000000000000000000000000000000000000001',
             'creator': '0xe41e5fa65d197afa059edce5225c1da2a01a361c'
         }
     },
@@ -425,7 +424,7 @@ Uni Arb: ${numeral(boa_yfka_roi).format('0,0.000000')}%
 
 --- PRICE USD ---
 ETH UNI: $${numeral(uniswap.ethUsd).format('0,0.00')} CG: $${numeral(coin_eth.getPrice("usd")).format('0,0.00')}
-XAMP UNI: $${numeral(uniswap.tokenUsd['XAMP']).format('0.000000')} CG: $${numeral(coin_xamp.getPrice("usd")).format('0,0.00')}
+XAMP UNI: $${numeral(uniswap.tokenUsd['XAMP']).format('0.000000')} CG: $${numeral(coin_xamp.getPrice("usd")).format('0,0.000000')}
 TOB UNI: $${numeral(uniswap.tokenUsd['TOB']).format('0,0.00')} CG: $${numeral(coin_tob.getPrice("usd")).format('0,0.00')}
 BOA UNI: $${numeral(uniswap.tokenUsd['BOA']).format('0,0.00')} CG: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
 YFKA UNI: $${numeral(uniswap.tokenUsd['YFKA']).format('0,0.00')}
