@@ -5,10 +5,15 @@ class Uniswap {
     constructor(params) {
         // UNISWAP PAIRS
         this.uniPairs = params.UNI_PAIR_ADDRESSES;
+        this.uniTokens = params.UNI_TOKEN_ADDRESSES;
 
         // UNISWAP DATA
         this.uniData = null;
         this.ratioData = {};
+
+        // Collect tokenDerivedEth
+        this.derivedEth = {};
+        this.ethUsd = null;
     }
 
     async fetchPairDataFromUni() {
@@ -130,6 +135,21 @@ class Uniswap {
               derivedETH
             }
           }
+          XAMP: token(id: "${this.uniTokens.XAMP}") {
+            derivedETH
+          }
+          TOB: token(id: "${this.uniTokens.TOB}") {
+            derivedETH
+          }
+          BOA: token(id: "${this.uniTokens.BOA}") {
+            derivedETH
+          }
+          YFKA: token(id: "${this.uniTokens.YFKA}") {
+            derivedETH
+          }
+          ETH: bundle(id: "1") {
+            ethPrice
+          }
           }
         `;
 
@@ -145,15 +165,24 @@ class Uniswap {
 
         const keys = Object.keys(this.uniData);
         keys.forEach((key) => {
-          const { token0, token1 } = this.uniData[key];
-          if (['ETH_TOB', 'ETH_YFKA', 'TOB_BOA', 'TOB_YFKA', 'BOA_YFKA'].indexOf(key) >= 0) {
-              this.ratioData[key] = getRatio(token1, token0);
-          } else if (['XAMP_YFKA'].indexOf(key) >= 0) {
-              this.ratioData[key] = 1.0 / getRatio(token0, token1);
-          } else {
-            this.ratioData[key] = getRatio(token0, token1);
-          }
+            if(key in this.uniPairs) {
+                const {token0, token1} = this.uniData[key];
+                if (['ETH_TOB', 'ETH_YFKA', 'TOB_BOA', 'TOB_YFKA', 'BOA_YFKA'].indexOf(key) >= 0) {
+                    this.ratioData[key] = getRatio(token1, token0);
+                } else if (['XAMP_YFKA'].indexOf(key) >= 0) {
+                    this.ratioData[key] = 1.0 / getRatio(token0, token1);
+                } else {
+                    this.ratioData[key] = getRatio(token0, token1);
+                }
+            } else if(key in this.uniTokens) {
+                this.derivedEth[key] = this.uniData[key].derivedETH;
+            } else if(key === 'ETH') {
+                this.ethUsd = this.uniData[key].ethPrice;
+            }
         });
+
+        console.log("BOA_YFKA:", this.ratioData['BOA_YFKA']);
+        console.log("ethUsd:", this.ethUsd);
     }
 }
 

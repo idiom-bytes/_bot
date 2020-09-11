@@ -235,6 +235,13 @@ gitlab.com/ssfaleads/burnbot`,
         TOB_YFKA: '0x34d0448a79f853d6e1f7ac117368c87bb7beea6b',
         BOA_YFKA: '0x5ecf87ff558f73d097eddfee35abde626c7aeab7',
     },
+    UNI_TOKEN_ADDRESSES: {
+        WETH: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        XAMP: '0xf911a7ec46a2c6fa49193212fe4a2a9b95851c27',
+        TOB: '0x7777770f8a6632ff043c8833310e245eba9209e6',
+        BOA: '0xf9c36c7ad7fa0f0862589c919830268d1a2581a1',
+        YFKA: '0x4086692d53262b2be0b13909d804f0491ff6ec3e',
+    },
     YAFK_PRESALE: {
         XAMP_YFKA: 0.0000231478550724638,
         TOB_YFKA: 0.00582608695652174,
@@ -327,33 +334,34 @@ bot.onText(/\/marketcap/, async (msg) => {
     try {
         await updateInternals();
 
-        let yfka_price = (1.0 / uniswap.ratioData["ETH_YFKA"]) * coin_eth.getPrice("usd")
-        let yfka_price_formatted = numeral(yfka_price).format(`0,0.00`);
+        let uni_xamp_price = uniswap.derivedEth["XAMP"] * uniswap.ethUsd;
+        let uni_tob_price = uniswap.derivedEth["TOB"] * uniswap.ethUsd;
+        let uni_boa_price = uniswap.derivedEth["BOA"] * uniswap.ethUsd;
+        let uni_yfka_price = uniswap.derivedEth["YFKA"] * uniswap.ethUsd;
 
         const totalBTSMarketCap =
-            (coin_yfka.supplyCurrent["circulating"] * yfka_price) +
-            (coin_boa.supplyCurrent["circulating"] * coin_boa.getPrice("usd")) +
-            (coin_tob.supplyCurrent["circulating"] * coin_tob.getPrice("usd")) +
-            (coin_xamp.supplyCurrent['circulating'] * coin_xamp.getPrice("usd"));
+            (coin_xamp.supplyCurrent['circulating'] * uni_xamp_price) +
+            (coin_tob.supplyCurrent["circulating"] * uni_tob_price) +
+            (coin_boa.supplyCurrent["circulating"] * uni_boa_price) +
+            (coin_yfka.supplyCurrent["circulating"] * uni_yfka_price);
         const totalMarketCapString = numeral(totalBTSMarketCap).format("0,0.00");
 
         bot.sendMessage(
             msg.chat.id,
             `Burn The State
-MCAP = CIRCULATING SUPPLY * PRICE
+MCAP = CIRCULATING SUPPLY * UNISWAP PRICE
 ----------------------------------
-XAMP Supply: ${numeral(coin_xamp.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(coin_xamp.getPrice("usd")).format("0,0.0000")}
-XAMP MCap $${numeral(coin_xamp.supplyCurrent["circulating"] * coin_xamp.getPrice("usd")).format("0,0.00")}
+XAMP Supply: ${numeral(coin_xamp.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(uni_xamp_price).format("0,0.0000")}
+XAMP MCap $${numeral(coin_xamp.supplyCurrent["circulating"] * uni_xamp_price).format("0,0.00")}
 
-TOB Supply: ${numeral(coin_tob.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(coin_tob.getPrice("usd")).format("0,0.00")}
-TOB MCap: $${numeral(coin_tob.supplyCurrent["circulating"] * coin_tob.getPrice("usd")).format("0,0.00")}
+TOB Supply: ${numeral(coin_tob.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(uni_tob_price).format("0,0.00")}
+TOB MCap: $${numeral(coin_tob.supplyCurrent["circulating"] * uni_tob_price).format("0,0.00")}
 
-BOA Supply: ${numeral(coin_boa.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(coin_boa.getPrice("usd")).format("0,0.00")}
-BOA MCap: $${numeral(coin_boa.supplyCurrent["circulating"] * coin_boa.getPrice("usd")).format("0,0.00")}
+BOA Supply: ${numeral(coin_boa.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(uni_boa_price).format("0,0.00")}
+BOA MCap: $${numeral(coin_boa.supplyCurrent["circulating"] * uni_boa_price).format("0,0.00")}
 
-YFKA Price ~= (Uniswap YFKA/ETH) * ETH/USD
-YFKA Supply: ${numeral(coin_yfka.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${yfka_price_formatted}
-YFKA MCap: $${numeral(coin_yfka.supplyCurrent["circulating"] * yfka_price).format("0,0.00")}
+YFKA Supply: ${numeral(coin_yfka.supplyCurrent["circulating"]).format("0,0.00")} | Price: $${numeral(uni_boa_price).format("0,0.00")}
+YFKA MCap: $${numeral(coin_yfka.supplyCurrent["circulating"] * uni_yfka_price).format("0,0.00")}
 
 Total BTS MCap: $${totalMarketCapString}
 Warning: Prices data might be delayed`
@@ -393,6 +401,11 @@ bot.onText(/\/ratio/, async (msg) => {
         tob_yfka_roi = ((uniswap.ratioData['TOB_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA) * 100.0;
         boa_yfka_roi = ((uniswap.ratioData['BOA_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA) * 100.0;
 
+        let uni_xamp_price = uniswap.derivedEth["XAMP"] * uniswap.ethUsd;
+        let uni_tob_price = uniswap.derivedEth["TOB"] * uniswap.ethUsd;
+        let uni_boa_price = uniswap.derivedEth["BOA"] * uniswap.ethUsd;
+        let uni_yfka_price = uniswap.derivedEth["YFKA"] * uniswap.ethUsd;
+
         bot.sendMessage(msg.chat.id,
         `Uniswap B.T.S. Ratios
       
@@ -420,6 +433,13 @@ Uni Arb: ${numeral(tob_yfka_roi).format('0,0.000000')}%
 BOA_YFKA Ratio: ${numeral(uniswap.ratioData['BOA_YFKA']).format('0,0.000000')}
 Presale: ${CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA.toFixed(6)}
 Uni Arb: ${numeral(boa_yfka_roi).format('0,0.000000')}%
+
+--- PRICE USD ---
+ETH UNI: $${numeral(uniswap.ethUsd).format('0,0.00')} CG: $${numeral(coin_eth.getPrice("usd")).format('0,0.00')}
+XAMP UNI: $${numeral(uni_xamp_price).format('0.000000')} CG: $${numeral(coin_xamp.getPrice("usd")).format('0,0.00')}
+TOB UNI: $${numeral(uni_tob_price).format('0,0.00')} CG: $${numeral(coin_tob.getPrice("usd")).format('0,0.00')}
+BOA UNI: $${numeral(uni_boa_price).format('0,0.00')} CG: $${numeral(coin_boa.getPrice("usd")).format('0,0.00')}
+YFKA UNI: $${numeral(uni_yfka_price).format('0,0.00')}
 
 Warning: Prices data might be delayed`
         );

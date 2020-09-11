@@ -114,6 +114,10 @@ class Xamp extends BaseCoin {
         Rebase will be enabled: ${moment(this.contractData["nextRebaseDate"]).fromNow()}        
         _contract.CanRebase(): ${this.contractData["canRebase"]}`;
     }
+
+    getDistanceFromRebase() {
+        this.contractData
+    }
 }
 
 module.exports = Xamp;
