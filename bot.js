@@ -4,6 +4,15 @@ const _ = require('lodash');
 const numeral = require('numeral');
 const moment = require('moment');
 
+// \xE2\x8C\x9B // hourglass
+// \xE2\x8F\xB3 // hourglass with flowing sand
+// \xE2\x9A\xA0 // warning sign
+// \xF0\x9F\x8E\x89 // party popper
+// \xF0\x9F\x8E\x8A // confetti ball
+// \xF0\x9F\x92\x9A // green heart
+// \xF0\x9F\x92\x9B // yellow heart
+// \xF0\x9F\x94\xB4 // large red circle
+
 const Uniswap = require('./src/components/Uniswap')
 const Tob = require('./src/components/Tob')
 const Xamp = require('./src/components/Xamp')
@@ -395,7 +404,9 @@ ETH_YFKA Ratio: ${numeral(uniswap.ratioData['ETH_YFKA']).format('0,0.0000')}
 
 --- TOB (to) ---
 TOB_XAMP Ratio: ${numeral(uniswap.ratioData['TOB_XAMP']).format('0,0.0000')}
-TOB_BOA Ratio: ${numeral(uniswap.ratioData['TOB_BOA']).format('0,0.000000000')}
+
+--- BOA (to) ---
+BOA_TOB Ratio: ${numeral(uniswap.ratioData['TOB_BOA']).format('0,0.0000')}
 
 --- BTS (to) YFKA ---
 XAMP_YFKA Ratio: ${numeral(uniswap.ratioData['XAMP_YFKA']).format('0,0.000000000')} 

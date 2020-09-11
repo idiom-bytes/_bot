@@ -146,12 +146,10 @@ class Uniswap {
         const keys = Object.keys(this.uniData);
         keys.forEach((key) => {
           const { token0, token1 } = this.uniData[key];
-          if (['ETH_TOB', 'ETH_YFKA', 'TOB_YFKA', 'BOA_YFKA'].indexOf(key) >= 0) {
+          if (['ETH_TOB', 'ETH_YFKA', 'TOB_BOA', 'TOB_YFKA', 'BOA_YFKA'].indexOf(key) >= 0) {
               this.ratioData[key] = getRatio(token1, token0);
           } else if (['XAMP_YFKA'].indexOf(key) >= 0) {
               this.ratioData[key] = 1.0 / getRatio(token0, token1);
-          } else if (['TOB_BOA'].indexOf(key) >= 0) {
-              this.ratioData[key] = 1.0 / getRatio(token1, token0);
           } else {
             this.ratioData[key] = getRatio(token0, token1);
           }
