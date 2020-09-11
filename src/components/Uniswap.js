@@ -13,6 +13,7 @@ class Uniswap {
 
         // Collect tokenDerivedEth
         this.derivedEth = {};
+        this.tokenUsd = {};
         this.ethUsd = null;
     }
 
@@ -179,6 +180,11 @@ class Uniswap {
             } else if(key === 'ETH') {
                 this.ethUsd = this.uniData[key].ethPrice;
             }
+        });
+
+        const tokens = Object.keys(this.uniTokens);
+        tokens.forEach((token) => {
+            this.tokenUsd[token] = this.derivedEth[token] * this.ethUsd;
         });
 
         console.log("BOA_YFKA:", this.ratioData['BOA_YFKA']);
