@@ -3,7 +3,7 @@ const {web3} = require('./functions/web3')
 const axios = require('axios');
 const CoinGecko = require('coingecko-api');
 
-const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || 'F1H66VY5U2MYJDE8J37GCZABCF2M17Y1TX';
+const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || 'your_api_key_here';
 console.log("ETHERSCAN_API_KEY", ETHERSCAN_API_KEY);
 
 class BaseCoin {

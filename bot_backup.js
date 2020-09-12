@@ -48,7 +48,7 @@ const CG_PARAMS = {
 
 // TODO https://t.me/testxampburnbot
 // TODO i should burn this key and remember prov vs dev keys lol oops
-const TOKEN = process.env.TELEGRAM_TOKEN || '1285492257:AAFSa3SOQCUujBzUOqG3WQmAx9ks0j0LmiY';
+const TOKEN = process.env.TELEGRAM_TOKEN || "your_api_key_here";
 
 const bot = new TelegramBot(TOKEN, { polling: true });
 

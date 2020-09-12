@@ -126,11 +126,11 @@ initializeListeners = async (bot) => {
     tgBotInstance = bot;
     const blockNumber = await wssWeb3.eth.getBlockNumber();
 
-    // xampListenToRebaseSuccess(blockNumber, xampRebaseSuccessListener);
-    // xampListenToRebaseFail(blockNumber, xampRebaseFailListener);
-    //
-    // tobListenToRebaseSuccess(blockNumber, tobRebaseSuccessListener);
-    // tobListenToRebaseFail(blockNumber, tobRebaseFailListener);
+    xampListenToRebaseSuccess(blockNumber, xampRebaseSuccessListener);
+    xampListenToRebaseFail(blockNumber, xampRebaseFailListener);
+
+    tobListenToRebaseSuccess(blockNumber, tobRebaseSuccessListener);
+    tobListenToRebaseFail(blockNumber, tobRebaseFailListener);
 }
 
 module.exports = initializeListeners;

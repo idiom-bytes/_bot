@@ -25,7 +25,7 @@ const Eth = require('./src/components/Eth')
 const dotenv = require('dotenv');
 dotenv.config();
 
-const TOKEN = process.env.TELEGRAM_TOKEN || "1298301577:AAHB3jteAQXtSWJLHIVMQibrCrxiDsDTAAk";
+const TOKEN = process.env.TELEGRAM_TOKEN || "your_api_key_here";
 const bot = new TelegramBot(TOKEN, {polling: true});
 const cgClient = new CoinGecko();
 
