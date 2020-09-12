@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config(".env");
 
-const commas = require('./commas');
+const commas = require('./src/components/functions/commas');
 const {wssWeb3} = require('./src/components/functions/web3');
 const http = require('http');
 

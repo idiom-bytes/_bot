@@ -130,9 +130,9 @@ const CONFIG_PARAMS = {
         Study top Xamp/Tob whale activity.`,
     websites:
         `Official Sites
-        XAMP Official: https://antiaple.org/
+        XAMP Official: https://antiample.org/
         TOB Official: https://tokensofbabel.com/
-        BOA Official: https://https://boa-token.webflow.io/
+        BOA Official: https://boacoin.cash/
         YFKA Official: https://burnthestate.com/
 
 Community Sites
