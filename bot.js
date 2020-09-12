@@ -4,17 +4,8 @@ const _ = require('lodash');
 const numeral = require('numeral');
 const moment = require('moment');
 
-// EMOJIS UNICODE TABLE
-// https://apps.timwhitlock.info/emoji/tables/unicode
-// \xE2\x8C\x9B // hourglass
-// \xE2\x8F\xB3 // hourglass with flowing sand
-// \xE2\x9A\xA0 // warning sign
-// \xF0\x9F\x8E\x89 // party popper
-// \xF0\x9F\x8E\x8A // confetti ball
-// \xF0\x9F\x92\x9A // green heart
-// \xF0\x9F\x92\x9B // yellow heart
-// \xF0\x9F\x94\xB4 // large red circle
-// \xF0\x9F\x94\xA5 // fire
+// EMOJIS UNICODE TABLE - Get the Javascript escape
+// https://charbase.com/1f525-unicode-fire
 
 const Uniswap = require('./src/components/Uniswap')
 const Tob = require('./src/components/Tob')
