@@ -4,6 +4,8 @@ const _ = require('lodash');
 const numeral = require('numeral');
 const moment = require('moment');
 
+// EMOJIS UNICODE TABLE
+// https://apps.timwhitlock.info/emoji/tables/unicode
 // \xE2\x8C\x9B // hourglass
 // \xE2\x8F\xB3 // hourglass with flowing sand
 // \xE2\x9A\xA0 // warning sign
@@ -277,8 +279,10 @@ const updateInternals = async () => {
     }
 }
 
-updateInternals()
+updateInternals();
 
+const initializeListeners = require('./rebaseListener.js');
+initializeListeners(bot);
 
 // TG BOT ENTRYPOINTS
 bot.onText(/\/help/, async (msg) => {
@@ -306,6 +310,7 @@ bot.onText(/\/help/, async (msg) => {
     Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
     Tip Link: https://bit.ly/2QPUjWk`
         );
+        console.log("Telegram chat id is:", msg.chat.id)
     } catch (error) {
         console.error("BOT CATCH ERROR /help:\n",error);
     }

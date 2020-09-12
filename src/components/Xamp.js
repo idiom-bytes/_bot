@@ -1,6 +1,6 @@
 const commas = require('./functions/commas');
 const BaseCoin = require('./BaseCoin');
-const web3 = require('./functions/web3')
+const {web3} = require('./functions/web3');
 const moment = require('moment')
 
 class Xamp extends BaseCoin {
@@ -101,7 +101,7 @@ class Xamp extends BaseCoin {
         Supply Total: ${commas(this.supplyCurrent["total"].toFixed(2))}
         Supply Burned: ${commas(this.supplyCurrent["burn"].toFixed(2))} (${((this.supplyCurrent["burn"]/this.supplyCurrent["total"])*100).toFixed(2)}%)
         Supply Vested: ${commas(this.supplyCurrent["vested"].toFixed(2))} (${((this.supplyCurrent["vested"]/this.supplyCurrent["total"])*100).toFixed(2)}%)
-        Supply Circulating: ${commas(this.supplyCurrent["circulating"].toFixed(2))} (${((this.supplyCurrent["circulating"]/this.supplyCurrent["total"])*100).toFixed(2)}%)`;
+            Supply Circulating: ${commas(this.supplyCurrent["circulating"].toFixed(2))} (${((this.supplyCurrent["circulating"]/this.supplyCurrent["total"])*100).toFixed(2)}%)`;
     }
 
     getRebase() {

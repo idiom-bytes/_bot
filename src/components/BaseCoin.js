@@ -1,5 +1,5 @@
 const commas = require('./functions/commas');
-const web3 = require('./functions/web3')
+const {web3} = require('./functions/web3')
 const axios = require('axios');
 const CoinGecko = require('coingecko-api');
 

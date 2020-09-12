@@ -1,6 +1,6 @@
 const commas = require('./functions/commas');
 const BaseCoin = require('./BaseCoin');
-const web3 = require('./functions/web3')
+const {web3} = require('./functions/web3');
 const moment = require('moment')
 
 class Tob extends BaseCoin {
