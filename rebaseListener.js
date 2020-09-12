@@ -29,10 +29,10 @@ function emitBotMessage(body) {
 
 function buildEmailBody(contractEvent, oldPrice, newPrice, delta, ticker) {
     txHash = "No TX issued."
-    broadcastHeader = "RebaseFail"
+    broadcastHeader = "RebaseFail \ud83d\udd34"
     coinsBurned = 0
     if(delta) {
-        broadcastHeader = "RebaseSuccess"
+        broadcastHeader = "RebaseSuccess \ud83d\udd25\ud83d\udd25\ud83d\udd25"
         coinsBurned = commas(delta.toFixed(2))
     }
 
@@ -124,7 +124,7 @@ function tobListenToRebaseFail(fromBlockNumber, rebaseFailListener) {
 // APP FUNCTIONALITY
 initializeListeners = async (bot) => {
     tgBotInstance = bot;
-    const blockNumber = await wssWeb3.eth.getBlockNumber()-2500;
+    const blockNumber = await wssWeb3.eth.getBlockNumber();
 
     xampListenToRebaseSuccess(blockNumber, xampRebaseSuccessListener);
     xampListenToRebaseFail(blockNumber, xampRebaseFailListener);

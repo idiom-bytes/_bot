@@ -14,6 +14,7 @@ const moment = require('moment');
 // \xF0\x9F\x92\x9A // green heart
 // \xF0\x9F\x92\x9B // yellow heart
 // \xF0\x9F\x94\xB4 // large red circle
+// \xF0\x9F\x94\xA5 // fire
 
 const Uniswap = require('./src/components/Uniswap')
 const Tob = require('./src/components/Tob')
