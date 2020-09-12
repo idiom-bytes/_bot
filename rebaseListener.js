@@ -22,6 +22,9 @@ var tgBotInstance = null;
 function emitBotMessage(body) {
     try {
         tgBotInstance.sendMessage(process.env.TELEGRAM_CHAT_ID, body);
+        if(process.env.DEPLOY === 'PROD') {
+            tgBotInstance.sendMessage("-1001166269042", body);
+        }
     } catch (error) {
         console.error("BOT CATCH ERROR /supply:\n",error);
     }
@@ -124,7 +127,7 @@ function tobListenToRebaseFail(fromBlockNumber, rebaseFailListener) {
 // APP FUNCTIONALITY
 initializeListeners = async (bot) => {
     tgBotInstance = bot;
-    const blockNumber = await wssWeb3.eth.getBlockNumber();
+    const blockNumber = await wssWeb3.eth.getBlockNumber() - 3000;
 
     xampListenToRebaseSuccess(blockNumber, xampRebaseSuccessListener);
     xampListenToRebaseFail(blockNumber, xampRebaseFailListener);
