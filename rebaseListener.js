@@ -124,7 +124,7 @@ function tobListenToRebaseFail(fromBlockNumber, rebaseFailListener) {
 // APP FUNCTIONALITY
 initializeListeners = async (bot) => {
     tgBotInstance = bot;
-    const blockNumber = await wssWeb3.eth.getBlockNumber();
+    const blockNumber = await wssWeb3.eth.getBlockNumber()-2500;
 
     xampListenToRebaseSuccess(blockNumber, xampRebaseSuccessListener);
     xampListenToRebaseFail(blockNumber, xampRebaseFailListener);
