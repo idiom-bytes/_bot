@@ -293,7 +293,7 @@ bot.onText(/\/help/, async (msg) => {
     /charts - Get link to charts.
     /articles - Get all articles.
     /contracts - Get contract addresses.
-    /uniswap_config - Get uniswap Pairs & Tokens
+    /uniConfig - Get uniswap Pairs & Tokens
     /motd /latest /release - Message of the Week.
     /video - Get a random B.T.S. video.
     /github - Audit/contribute to bot.
@@ -488,12 +488,12 @@ YFKA Contract: ${CONFIG_PARAMS.yfka.contractBitly}`
     }
 });
 
-bot.onText(/\/uniswap_config/, async (msg) => {
+bot.onText(/\/uniConfig/, async (msg) => {
     try {
         output_data = `UNISWAP TOKEN LIST
-        https://tokenlists.org/token-list?url=burnthestate.eth
+https://tokenlists.org/token-list?url=burnthestate.eth
         
-        UNISWAP PAIR ADDRESSES
+UNISWAP PAIR ADDRESSES
 ----------------------------\n`;
         Object.keys(CONFIG_PARAMS['UNI_PAIR_ADDRESSES']).map((key) => output_data +=`${key}: ${CONFIG_PARAMS.UNI_PAIR_ADDRESSES[key]}\n`)
 
