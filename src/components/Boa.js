@@ -71,13 +71,16 @@ class Boa extends BaseCoin {
     }
 
     getRebase() {
+        const isProfitable = this.contractData["isProfitable"] ? "\u2705" : "\u274c";
+        const canRebase = this.contractData["canRebase"] ? "\u2705" : "\u274c";
+
         return `${this.ticker}
         To Burn: Tax Pool > (Circulating - Tax Pool)
         Tax Pool Supply: ${this.supplyCurrent["taxPool"].toFixed(6)}
         Circulating Supply: ${this.supplyCurrent["circulating"].toFixed(6)}
         Remaining Supply: ${this.supplyCurrent["remainder"].toFixed(6)}
-        _contract.IsProfitable(): ${this.contractData["isProfitable"]}
-        _contract.CanRebase(): ${this.contractData["canRebase"]}`;
+        _contract.IsProfitable(): ${isProfitable}
+        _contract.CanRebase(): ${canRebase}`;
     }
 }
 

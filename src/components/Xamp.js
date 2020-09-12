@@ -105,14 +105,17 @@ class Xamp extends BaseCoin {
     }
 
     getRebase() {
+        const canBurn = this.contractData["canBurn"] ? "\u2705" : "\u274c";
+        const canRebase = this.contractData["canRebase"] ? "\u2705" : "\u274c";
+
         return `${this.ticker}
         To Burn: Current Price < Last Price 
         Current Price: ${this.contractData["currentExchangeRate"].toFixed(6)}
         Last Price: ${this.contractData["lastExchangeRate"].toFixed(6)}
-        _contract.CanBurn(): ${this.contractData["canBurn"]}
+        _contract.CanBurn(): ${canBurn}
         Last Rebase: ${this.contractData["lastRebaseDate"].fromNow()}
         Rebase will be enabled: ${moment(this.contractData["nextRebaseDate"]).fromNow()}        
-        _contract.CanRebase(): ${this.contractData["canRebase"]}`;
+        _contract.CanRebase(): ${canRebase}`;
     }
 
     getDistanceFromRebase() {
