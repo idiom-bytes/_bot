@@ -293,11 +293,12 @@ bot.onText(/\/help/, async (msg) => {
     /charts - Get link to charts.
     /articles - Get all articles.
     /contracts - Get contract addresses.
+    /uniswap_config - Get uniswap Pairs & Tokens
     /motd /latest /release - Message of the Week.
     /video - Get a random B.T.S. video.
     /github - Audit/contribute to bot.
     /donate - Support the community
-
+    
     Community Devs: @idiom @geezy @jaycee
     Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
     Tip Link: https://bit.ly/2QPUjWk`
@@ -379,17 +380,28 @@ bot.onText(/\/rebase/, async (msg) => {
     }
 });
 
+function getArbOppMsg(ticker, roi) {
+    const canArbitrage = roi > 0.00 ? "\u2705" : "\u274c";
+    if (roi > 0.00) {
+        return `${canArbitrage} ${ticker} Buy on Presale. Sell on Uniswap. Profit.`
+    } else {
+        return `${canArbitrage} ${ticker} Uniswap is cheaper than presale.`
+    }
+}
+
 // TODO - Implement CoinGecko ratio calculation w/ latest code base
 bot.onText(/\/ratio/, async (msg) => {
     try {
         await updateInternals();
         const keys = Object.keys(uniswap.ratioData);
-        // output_data = ''
-        // keys.map((key) => output_data +=`${key} Ratio: ${uniswap.ratioData[key]}\n`)
 
         xamp_yfka_roi = ((uniswap.ratioData['XAMP_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA) * 100.0;
         tob_yfka_roi = ((uniswap.ratioData['TOB_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA) * 100.0;
         boa_yfka_roi = ((uniswap.ratioData['BOA_YFKA'] - CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA) / CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA) * 100.0;
+
+        xampArb = getArbOppMsg(CONFIG_PARAMS.xamp.ticker, xamp_yfka_roi);
+        tobArb = getArbOppMsg(CONFIG_PARAMS.tob.ticker, tob_yfka_roi);
+        boaArb = getArbOppMsg(CONFIG_PARAMS.boa.ticker, boa_yfka_roi);
 
         bot.sendMessage(msg.chat.id,
         `Uniswap B.T.S. Ratios
@@ -410,14 +422,17 @@ BOA_TOB Ratio: ${numeral(uniswap.ratioData['TOB_BOA']).format('0,0.0000')}
 XAMP_YFKA Ratio: ${numeral(uniswap.ratioData['XAMP_YFKA']).format('0,0.000000000')} 
 Presale: ${CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA.toFixed(9)} 
 Uni Arb: ${numeral(xamp_yfka_roi).format('0,0.000000')}%
+${xampArb}
 
 TOB_YFKA Ratio: ${numeral(uniswap.ratioData['TOB_YFKA']).format('0,0.000000')}
 Presale: ${CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA.toFixed(9)} 
 Uni Arb: ${numeral(tob_yfka_roi).format('0,0.000000')}%
+${tobArb}
 
 BOA_YFKA Ratio: ${numeral(uniswap.ratioData['BOA_YFKA']).format('0,0.000000')}
 Presale: ${CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA.toFixed(6)}
 Uni Arb: ${numeral(boa_yfka_roi).format('0,0.000000')}%
+${boaArb}
 
 --- PRICE USD ---
 ETH UNI: $${numeral(uniswap.ethUsd).format('0,0.00')} CG: $${numeral(coin_eth.getPrice("usd")).format('0,0.00')}
@@ -468,6 +483,24 @@ XAMP Rebase Contract: ${CONFIG_PARAMS.xamp.rebaseBitly}
 BOA Contract: ${CONFIG_PARAMS.boa.contractBitly}
 YFKA Contract: ${CONFIG_PARAMS.yfka.contractBitly}`
         );
+    } catch (error) {
+        console.error("BOT CATCH ERROR /contracts:\n",error);
+    }
+});
+
+bot.onText(/\/uniswap_config/, async (msg) => {
+    try {
+        output_data = `UNISWAP TOKEN LIST
+        https://tokenlists.org/token-list?url=burnthestate.eth
+        
+        UNISWAP PAIR ADDRESSES
+----------------------------\n`;
+        Object.keys(CONFIG_PARAMS['UNI_PAIR_ADDRESSES']).map((key) => output_data +=`${key}: ${CONFIG_PARAMS.UNI_PAIR_ADDRESSES[key]}\n`)
+
+        output_data += `\n\nUNISWAP TOKEN ADDRESSES
+----------------------------\n`;
+        Object.keys(CONFIG_PARAMS['UNI_TOKEN_ADDRESSES']).map((key) => output_data +=`${key}: ${CONFIG_PARAMS.UNI_TOKEN_ADDRESSES[key]}\n`)
+        bot.sendMessage(msg.chat.id, output_data);
     } catch (error) {
         console.error("BOT CATCH ERROR /contracts:\n",error);
     }
