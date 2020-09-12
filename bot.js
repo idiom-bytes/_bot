@@ -156,7 +156,7 @@ YFKA (ASH):
     - https://burnthestate.com
 
 Airdrop:
-    - The team has triggered the airdrop.
+    - The team has triggered the snapshot.
     - You should receive your TOB soon.
 
 Farming Diagram:
@@ -293,7 +293,7 @@ bot.onText(/\/help/, async (msg) => {
     /charts - Get link to charts.
     /articles - Get all articles.
     /contracts - Get contract addresses.
-    /uniConfig - Get uniswap Pairs & Tokens
+    /uniConfig - Get Uniswap BTS configuration
     /motd /latest /release - Message of the Week.
     /video - Get a random B.T.S. video.
     /github - Audit/contribute to bot.
@@ -383,9 +383,9 @@ bot.onText(/\/rebase/, async (msg) => {
 function getArbOppMsg(ticker, roi) {
     const canArbitrage = roi > 0.00 ? "\u2705" : "\u274c";
     if (roi > 0.00) {
-        return `${canArbitrage} ${ticker} Buy on Presale. Sell on Uniswap. Profit.`
+        return `${canArbitrage} Buy on Presale. Sell on Uniswap. Profit.`
     } else {
-        return `${canArbitrage} ${ticker} Uniswap is cheaper than presale.`
+        return `${canArbitrage} Uniswap is cheaper than presale.`
     }
 }
 
