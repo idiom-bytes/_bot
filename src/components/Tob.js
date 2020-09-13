@@ -24,9 +24,6 @@ class Tob extends BaseCoin {
         // this.supplyCurrent["vested"] = obj => Object.values(this.supplyCurrent).filter(this.filterDefaultsupplyAddresses).select(value => {'vested' in value}).reduce((a, b) => a + b);
         this.supplyCurrent["vested"] = this.supplyCurrent["vested1"] + this.supplyCurrent["vested2"];
         this.supplyCurrent["circulating"] = this.supplyCurrent["total"] - this.supplyCurrent["burn"];
-
-        console.log(`Start circulating Supply: `, this.supplyStart["circulating"]);
-        console.log(`Current circulating Supply: `, this.supplyCurrent["circulating"]);
     }
 
     async updateRebase() {
@@ -44,13 +41,11 @@ class Tob extends BaseCoin {
         await this.rebaseWeb3.methods.currentExchangeRate().call()
             .then(res => {
                 this.contractData["currentExchangeRate"] = res / Math.pow(10,this.priceDecimals);
-                console.log('TOB: currentExchangeRate: ', this.contractData['currentExchangeRate']);
             })
 
         await this.rebaseWeb3.methods.lastExchangeRate().call()
             .then(res => {
                 this.contractData["lastExchangeRate"] = res / Math.pow(10,this.priceDecimals);
-                console.log('TOB: lastRebaseRate: ', this.contractData['lastExchangeRate']);
             })
 
         // TEST/DEBUG LOGIC TO SIMULATE REBASE PRICE
@@ -63,14 +58,12 @@ class Tob extends BaseCoin {
             .then(async (res) => {
                 // this.contractData["lastRebaseDate"] = new Date(res*1000);
                 this.contractData["lastRebaseDate"]= moment(new Date(res * 1000));
-                console.log('TOB: lastRebaseDate: ', this.contractData['lastRebaseDate'].format('MM/DD/YYYY HH:mm:ss'));
             })
 
         // Time Between Rebases - In Seconds
         await this.rebaseWeb3.methods.timeBetweenRebases().call()
             .then(async (res) => {
                 this.contractData["timeBetweenRebases"] = res;
-                console.log("TOB: timeBetweenRebases: ", this.contractData["timeBetweenRebases"]);
 
                 this.contractData["nextRebaseDate"] = this.contractData["lastRebaseDate"].clone();
                 this.contractData["nextRebaseDate"].add(this.contractData["timeBetweenRebases"], 'seconds')
@@ -84,15 +77,10 @@ class Tob extends BaseCoin {
 
                 // this.contractData["lastRebaseDateString"] = lastRebaseDateString;
                 // this.contractData["nextRebaseDateString"] = nextRebaseDateString;
-
-                console.log("TOB: nextRebaseDate: ", this.contractData["nextRebaseDate"].format('MM/DD/YYYY HH:mm:ss'));
             })
 
         this.contractData["canBurn"] = this.contractData["currentExchangeRate"] > this.contractData["lastExchangeRate"];
         this.contractData["canRebase"] = (new Date().getTime() > this.contractData["nextRebaseDate"]) || this.contractData["canBurn"];
-
-        console.log(`TOB: canBurn: `, this.contractData["canBurn"]);
-        console.log(`TOB: canRebase: `, this.contractData["canRebase"]);
     }
 
     async init() {

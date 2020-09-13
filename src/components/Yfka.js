@@ -13,9 +13,6 @@ class YFKA extends BaseCoin {
 
         // SUPPLY CURRENT
         this.supplyCurrent["circulating"] = this.supplyCurrent["total"];
-
-        console.log(`Start circulating Supply: `, this.supplyStart["circulating"]);
-        console.log(`Current circulating Supply: `, this.supplyCurrent["circulating"]);
     }
 
     async updateRebase() {

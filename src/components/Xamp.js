@@ -20,9 +20,6 @@ class Xamp extends BaseCoin {
         this.supplyStart["circulating"] = this.supplyStart["total"];
         // SUPPLY CURRENT
         this.supplyCurrent["circulating"] = this.supplyCurrent["total"] - this.supplyCurrent["burn"];
-
-        console.log(`XAMP: Start circulating Supply: `, this.supplyStart["circulating"]);
-        console.log(`XAMP: Current circulating Supply: `, this.supplyCurrent["circulating"]);
     }
 
     async updateRebase() {
@@ -33,13 +30,11 @@ class Xamp extends BaseCoin {
         await this.rebaseWeb3.methods.currentExchangeRate().call()
             .then(res => {
                 this.contractData["currentExchangeRate"] = res / Math.pow(10,this.priceDecimals);
-                console.log('XAMP: currentExchangeRate: ', this.contractData['currentExchangeRate']);
             })
 
         await this.rebaseWeb3.methods.lastExchangeRate().call()
             .then(res => {
                 this.contractData["lastExchangeRate"] = res / Math.pow(10,this.priceDecimals);
-                console.log('XAMP: lastExchangeRate: ', this.contractData['lastExchangeRate']);
             })
 
         // TEST/DEBUG LOGIC TO SIMULATE REBASE PRICE
@@ -51,14 +46,12 @@ class Xamp extends BaseCoin {
             .then(async (res) => {
                 // this.contractData["lastRebaseDate"] = new Date(res*1000);
                 this.contractData["lastRebaseDate"]= moment(new Date(res * 1000));
-                console.log('XAMP: lastRebaseDate: ', this.contractData['lastRebaseDate'].format('MM/DD/YYYY HH:mm:ss'));
             })
 
         // Time Between Rebases - In Seconds
         await this.rebaseWeb3.methods.timeBetweenRebases().call()
             .then(async (res) => {
                 this.contractData["timeBetweenRebases"] = res;
-                console.log("XAMP: timeBetweenRebases: ", this.contractData["timeBetweenRebases"]);
 
                 this.contractData["nextRebaseDate"] = this.contractData["lastRebaseDate"].clone();
                 this.contractData["nextRebaseDate"].add(this.contractData["timeBetweenRebases"], 'seconds')
@@ -72,14 +65,10 @@ class Xamp extends BaseCoin {
 
                 // this.contractData["lastRebaseDateString"] = lastRebaseDateString;
                 // this.contractData["nextRebaseDateString"] = nextRebaseDateString;
-                console.log("XAMP: nextRebaseDate: ", this.contractData["nextRebaseDate"].format('MM/DD/YYYY HH:mm:ss'));
             })
 
         this.contractData["canBurn"] = this.contractData['currentExchangeRate'] < this.contractData['lastExchangeRate'];
         this.contractData["canRebase"] = new Date().getTime() > this.contractData["nextRebaseDate"];
-
-        console.log(`XAMP: canBurn: `, this.contractData["canBurn"]);
-        console.log(`XAMP: canRebase: `, this.contractData["canRebase"]);
     }
 
     async init() {
@@ -116,10 +105,6 @@ class Xamp extends BaseCoin {
         Last Rebase: ${this.contractData["lastRebaseDate"].fromNow()}
         Rebase will be enabled: ${moment(this.contractData["nextRebaseDate"]).fromNow()}        
         _contract.CanRebase(): ${canRebase}`;
-    }
-
-    getDistanceFromRebase() {
-        this.contractData
     }
 }
 

@@ -18,23 +18,18 @@ class Boa extends BaseCoin {
                 this.supplyCurrent["taxPool"] = res / Math.pow(10,this.contractDecimals)
             })
             .catch(err => console.log(err));
-        console.log('BOA Supply: taxPool: ', this.supplyCurrent['taxPool']);
 
         await this.contractWeb3.methods.totalSupply().call()
             .then(res => {
                 this.supplyCurrent["total"] = res / Math.pow(10,this.contractDecimals)
             })
             .catch(err => console.log(err));
-        console.log('BOA Supply: total: ', this.supplyCurrent["total"]);
 
         // SUPPLY START
         this.supplyStart["circulating"] = this.supplyStart["total"];
         // SUPPLY CURRENT
         this.supplyCurrent["remainder"] = this.supplyCurrent["total"] - this.supplyCurrent["taxPool"];
         this.supplyCurrent["circulating"] = this.supplyCurrent["total"];
-
-        console.log(`BOA: Start Supply circulating: `, this.supplyStart["circulating"]);
-        console.log(`BOA: Current Supply circulating: `, this.supplyCurrent["circulating"]);
     }
 
     async updateRebase() {
@@ -46,9 +41,6 @@ class Boa extends BaseCoin {
             .catch(err => console.log(err));
 
         this.contractData["canRebase"] = this.contractData["isProfitable"] === true;
-
-        console.log(`BOA: isProfitable: `, this.contractData["isProfitable"]);
-        console.log(`BOA: canRebase: `, this.contractData["canRebase"]);
     }
 
     async init() {

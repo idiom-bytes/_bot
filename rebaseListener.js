@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config(".env");
 
 const commas = require('./src/components/functions/commas');
-const {wssWeb3} = require('./src/components/functions/web3');
+const {wssWeb3, web3} = require('./src/components/functions/web3');
 const http = require('http');
 
 // CONTRACT DETAILS
@@ -21,6 +21,7 @@ var tgBotInstance = null;
 
 function emitBotMessage(body) {
     try {
+        console.log('rebaseListener: Emit Message to TG groups');
         tgBotInstance.sendMessage(process.env.TELEGRAM_CHAT_ID, body);
         if(process.env.DEPLOY === 'PROD') {
             tgBotInstance.sendMessage("-1001166269042", body);
