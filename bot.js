@@ -383,9 +383,9 @@ bot.onText(/\/rebase/, async (msg) => {
 function getArbOppMsg(ticker, roi) {
     const canArbitrage = roi < 0.00 ? "\u2705" : "\u274c";
     if (roi < 0.00) {
-        return `${canArbitrage} Buy on Presale. Sell on Uniswap. Profit.`
+        return `${canArbitrage} Can Arbitrage. Buy on Presale.\nSell on Uniswap. Profit. [+${ro.toFixed(2)}%]`
     } else {
-        return `${canArbitrage} Uniswap is cheaper than presale.`
+        return `${canArbitrage} No arbitrage.\nUniswap is cheaper than presale. [-${roi.toFixed(2)}%]`
     }
 }
 
@@ -421,17 +421,14 @@ BOA_TOB Ratio: ${numeral(uniswap.ratioData['TOB_BOA']).format('0,0.0000')}
 --- BTS (to) YFKA ---
 XAMP_YFKA Ratio: ${numeral(uniswap.ratioData['XAMP_YFKA']).format('0,0.000000000')} 
 Presale: ${CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA.toFixed(9)} 
-Uni Arb: ${numeral(xamp_yfka_roi).format('0,0.000000')}%
 ${xampArb}
 
 TOB_YFKA Ratio: ${numeral(uniswap.ratioData['TOB_YFKA']).format('0,0.000000')}
 Presale: ${CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA.toFixed(9)} 
-Uni Arb: ${numeral(tob_yfka_roi).format('0,0.000000')}%
 ${tobArb}
 
 BOA_YFKA Ratio: ${numeral(uniswap.ratioData['BOA_YFKA']).format('0,0.000000')}
 Presale: ${CONFIG_PARAMS.YAFK_PRESALE.BOA_YFKA.toFixed(6)}
-Uni Arb: ${numeral(boa_yfka_roi).format('0,0.000000')}%
 ${boaArb}
 
 --- PRICE USD ---
