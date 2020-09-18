@@ -383,7 +383,7 @@ bot.onText(/\/rebase/, async (msg) => {
 function getArbOppMsg(ticker, roi) {
     const canArbitrage = roi < 0.00 ? "\u2705" : "\u274c";
     if (roi < 0.00) {
-        return `${canArbitrage} Can Arbitrage. Buy on Presale.\nSell on Uniswap. Profit. [+${ro.toFixed(2)}%]`
+        return `${canArbitrage} Can Arbitrage. Buy on Presale.\nSell on Uniswap. Profit. [+${roi.toFixed(2)}%]`
     } else {
         return `${canArbitrage} No arbitrage.\nUniswap is cheaper than presale. [-${roi.toFixed(2)}%]`
     }
