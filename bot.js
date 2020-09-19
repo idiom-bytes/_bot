@@ -577,7 +577,7 @@ bot.onText(/\/sync/, async (msg) => {
      ${keys.map(
        (key) =>
          `${key}: https://etherscan.io/address/${CONFIG_PARAMS.UNI_PAIR_ADDRESSES[key]}#writeContract`
-     )}
+     ).join('\n')}
     `;
     bot.sendMessage(msg.chat.id, CONFIG_PARAMS.github);
   } catch (error) {
