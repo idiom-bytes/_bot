@@ -298,6 +298,7 @@ bot.onText(/\/help/, async (msg) => {
     /video - Get a random B.T.S. video.
     /github - Audit/contribute to bot.
     /donate - Support the community
+    /sync - Instructions to sync the LP pools
 
     Community Devs: @idiom @geezy @jaycee
     Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
@@ -579,7 +580,7 @@ bot.onText(/\/sync/, async (msg) => {
          `${key}: https://etherscan.io/address/${CONFIG_PARAMS.UNI_PAIR_ADDRESSES[key]}#writeContract`
      ).join('\n')}
     `;
-    bot.sendMessage(msg.chat.id, CONFIG_PARAMS.github);
+    bot.sendMessage(msg.chat.id, message);
   } catch (error) {
     console.error("BOT CATCH ERROR /github:\n", error);
   }
