@@ -298,7 +298,7 @@ bot.onText(/\/help/, async (msg) => {
     /video - Get a random B.T.S. video.
     /github - Audit/contribute to bot.
     /donate - Support the community
-    
+
     Community Devs: @idiom @geezy @jaycee
     Tip Jar: 0x50f8fBE4011E9dDF4597AAE512ccFb00387fdBD2
     Tip Link: https://bit.ly/2QPUjWk`
@@ -405,7 +405,7 @@ bot.onText(/\/ratio/, async (msg) => {
 
         bot.sendMessage(msg.chat.id,
         `Uniswap B.T.S. Ratios
-      
+
 --- ETH (to) BTS ---
 ETH_XAMP Ratio: ${numeral(uniswap.ratioData['ETH_XAMP']).format('0,0.0000')}
 ETH_TOB Ratio: ${numeral(uniswap.ratioData['ETH_TOB']).format('0,0.0000')}
@@ -419,12 +419,12 @@ TOB_XAMP Ratio: ${numeral(uniswap.ratioData['TOB_XAMP']).format('0,0.0000')}
 BOA_TOB Ratio: ${numeral(uniswap.ratioData['TOB_BOA']).format('0,0.0000')}
 
 --- BTS (to) YFKA ---
-XAMP_YFKA Ratio: ${numeral(uniswap.ratioData['XAMP_YFKA']).format('0,0.000000000')} 
-Presale: ${CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA.toFixed(9)} 
+XAMP_YFKA Ratio: ${numeral(uniswap.ratioData['XAMP_YFKA']).format('0,0.000000000')}
+Presale: ${CONFIG_PARAMS.YAFK_PRESALE.XAMP_YFKA.toFixed(9)}
 ${xampArb}
 
 TOB_YFKA Ratio: ${numeral(uniswap.ratioData['TOB_YFKA']).format('0,0.000000')}
-Presale: ${CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA.toFixed(9)} 
+Presale: ${CONFIG_PARAMS.YAFK_PRESALE.TOB_YFKA.toFixed(9)}
 ${tobArb}
 
 BOA_YFKA Ratio: ${numeral(uniswap.ratioData['BOA_YFKA']).format('0,0.000000')}
@@ -489,7 +489,7 @@ bot.onText(/\/uniConfig/, async (msg) => {
     try {
         output_data = `UNISWAP TOKEN LIST
 https://tokenlists.org/token-list?url=burnthestate.eth
-        
+
 UNISWAP PAIR ADDRESSES
 ----------------------------\n`;
         Object.keys(CONFIG_PARAMS['UNI_PAIR_ADDRESSES']).map((key) => output_data +=`${key}: ${CONFIG_PARAMS.UNI_PAIR_ADDRESSES[key]}\n`)
@@ -561,6 +561,28 @@ bot.onText(/\/github/, async (msg) => {
     } catch (error) {
         console.error("BOT CATCH ERROR /github:\n",error);
     }
+});
+
+bot.onText(/\/sync/, async (msg) => {
+  try {
+    const keys = _.keys(CONFIG_PARAMS.UNI_PAIR_ADDRESSES);
+    const message = `
+     **How to sync BTS LP Pools**
+     - Go to LP contract's etherscan page
+     - Click "Write contract" tab (links below)
+     - ** CONFIRM ITS THE RIGHT LP CONTRACT **
+        - You can do this by checking the uniswap.info page for the pair. The /pair/address should match
+     - Connect your wallet, click sync and confirm/send the tx
+
+     ${keys.map(
+       (key) =>
+         `${key}: https://etherscan.io/address/${CONFIG_PARAMS.UNI_PAIR_ADDRESSES[key]}#writeContract`
+     )}
+    `;
+    bot.sendMessage(msg.chat.id, CONFIG_PARAMS.github);
+  } catch (error) {
+    console.error("BOT CATCH ERROR /github:\n", error);
+  }
 });
 
 // Just to ping!
