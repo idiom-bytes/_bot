@@ -1,4 +1,3 @@
-const {trackRebaseHistory} = require('./rebaseHistory')
 const moment = require('moment')
 
 const dotenv = require('dotenv');
@@ -20,57 +19,56 @@ tobAbi = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"an
 tobWeb3 = new wssWeb3.eth.Contract(tobAbi, tob0x);
 
 const PRICE_DECIMALS = 10;
-var tgBotInstance = null;
 
-function emitBotMessage(body) {
-    try {
-        console.log('rebaseListener: Emit Message to TG groups');
-        tgBotInstance.sendMessage(process.env.TELEGRAM_CHAT_ID, body);
-        if(process.env.DEPLOY === 'PROD') {
-            tgBotInstance.sendMessage("-1001166269042", body);
-        }
-    } catch (error) {
-        console.error("BOT CATCH ERROR /supply:\n",error);
-    }
-}
+var tobRebaseHistory = {}
+var xampRebaseHistory = {}
+var historyDirty = false
 
-async function buildEmailBody(contractEvent, oldPrice, newPrice, delta, ticker) {
-    timestamp = null
-    footer = "No TX issued."
-
-    broadcastHeader = "RebaseFail \ud83d\udd34"
+async function trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, ticker) {
+    var timestamp = null
+    var txHash = "No TX issued."
+    var broadcastHeader = delta > 0 ? "RebaseSuccess \ud83d\udd25\ud83d\udd25\ud83d\udd25" : "RebaseFail \ud83d\udd34"
+    var coinsBurned = delta > 0 ? commas(delta.toFixed(2)) : 0
     coinsBurned = 0
-    if(delta) {
-        broadcastHeader = "RebaseSuccess \ud83d\udd25\ud83d\udd25\ud83d\udd25"
-        coinsBurned = commas(delta.toFixed(2))
-    }
 
     if(contractEvent.transactionHash) {
         txHash = contractEvent.transactionHash
-        footer = `TX Hash: ${txHash}`
-
         try {
-            blockNumber = contractEvent.blockNumber
+            var blockNumber = contractEvent.blockNumber
             timestamp = await web3.eth.getBlock(blockNumber)
             timestamp = moment.unix(timestamp.timestamp)
-            footer += `\nTimestamp: ${timestamp.fromNow()}`
         } catch(error) {
             console.error(error)
         }
     }
 
-    emailBody = `$${ticker} ${broadcastHeader}
-New Price: $${newPrice/Math.pow(10, PRICE_DECIMALS)}
-Old Price: $${oldPrice/Math.pow(10, PRICE_DECIMALS)}
+    newPrice = newPrice/Math.pow(10, PRICE_DECIMALS)
+    oldPrice = oldPrice/Math.pow(10, PRICE_DECIMALS)
 
-Coins Burned: ${coinsBurned}
+    historyDict = null
+    if( ticker === "XAMP" ) { historyDict = xampRebaseHistory }
+    else { historyDict = tobRebaseHistory }
 
-${footer}`;
-    return emailBody
+    historyDirty = true
+
+    lastEntry = historyDict.length > 0 ? historyDict.length-1 : null
+    if( !(txHash in historyDict) ) {
+        historyDict[txHash] = {
+            txHash: txHash,
+            blockNumber: blockNumber,
+            timestamp: timestamp,
+            broadcastHeader: broadcastHeader,
+            coinsBurned: coinsBurned,
+            newPrice: newPrice,
+            oldPrice: oldPrice
+        }
+    } else {
+        return null
+    }
 }
 
 // XAMP XAMP XAMP
-async function xampRebaseSuccessListener(err, contractEvent) {
+function xampRebaseSuccessListener(err, contractEvent) {
     if (err) {
         console.error('XAMP @ RebaseSuccess listener error: ', err);
         return;
@@ -78,23 +76,17 @@ async function xampRebaseSuccessListener(err, contractEvent) {
 
     var {oldPrice, newPrice, delta} = contractEvent.returnValues;
     delta = delta/Math.pow(10, xampDecimals)
-
-    trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, "XAMP")
-    body = await buildEmailBody(contractEvent, oldPrice, newPrice, delta, "XAMP")
-    emitBotMessage(body);
+    trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, "XAMP");
 }
 
-async function xampRebaseFailListener(err, contractEvent) {
+function xampRebaseFailListener(err, contractEvent) {
     if (err) {
         console.error('XAMP @ RebaseFail listener error: ', err);
         return;
     }
 
     var {oldPrice, newPrice} = contractEvent.returnValues;
-
-    trackRebaseHistory(contractEvent, oldPrice, newPrice, null, "XAMP")
-    body = await buildEmailBody(contractEvent, oldPrice, newPrice, null, "XAMP")
-    emitBotMessage(body);
+    trackRebaseHistory(contractEvent, oldPrice, newPrice, null, "XAMP");
 }
 
 function xampListenToRebaseSuccess(fromBlockNumber, rebaseSuccessListener) {
@@ -113,7 +105,7 @@ function xampListenToRebaseFail(fromBlockNumber, rebaseFailListener) {
 
 
 // TOB TOB TOB
-async function tobRebaseSuccessListener(err, contractEvent) {
+function tobRebaseSuccessListener(err, contractEvent) {
     if (err) {
         console.error('TOB @ RebaseSuccess listener error: ', err);
         return;
@@ -121,23 +113,17 @@ async function tobRebaseSuccessListener(err, contractEvent) {
 
     var {oldPrice, newPrice, delta} = contractEvent.returnValues;
     delta = delta/Math.pow(10, tobDecimals)
-
-    trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, "TOB")
-    body = await buildEmailBody(contractEvent, oldPrice, newPrice, delta, "TOB")
-    emitBotMessage(body);
+    trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, "TOB");
 }
 
-async function tobRebaseFailListener(err, contractEvent) {
+function tobRebaseFailListener(err, contractEvent) {
     if (err) {
         console.error('TOB @ RebaseFail listener error: ', err);
         return;
     }
 
     var {oldPrice, newPrice} = contractEvent.returnValues;
-
-    trackRebaseHistory(contractEvent, oldPrice, newPrice, null, "TOB")
-    body = await buildEmailBody(contractEvent, oldPrice, newPrice, null, "TOB")
-    emitBotMessage(body);
+    trackRebaseHistory(contractEvent, oldPrice, newPrice, null, "TOB");
 }
 
 function tobListenToRebaseSuccess(fromBlockNumber, rebaseSuccessListener) {
@@ -155,19 +141,12 @@ function tobListenToRebaseFail(fromBlockNumber, rebaseFailListener) {
 }
 
 // APP FUNCTIONALITY
-initializeListeners = async (bot) => {
-    tgBotInstance = bot;
+initializeHistory = async () => {
+    xampListenToRebaseSuccess(0, xampRebaseSuccessListener);
+    xampListenToRebaseFail(0, xampRebaseFailListener);
 
-    var blockNumber = await wssWeb3.eth.getBlockNumber();
-    if(process.env.DEPLOY === 'DEV') {
-        blockNumber -= 5000;
-    }
-
-    xampListenToRebaseSuccess(blockNumber, xampRebaseSuccessListener);
-    xampListenToRebaseFail(blockNumber, xampRebaseFailListener);
-
-    tobListenToRebaseSuccess(blockNumber, tobRebaseSuccessListener);
-    tobListenToRebaseFail(blockNumber, tobRebaseFailListener);
+    tobListenToRebaseSuccess(0, tobRebaseSuccessListener);
+    tobListenToRebaseFail(0, tobRebaseFailListener);
 }
 
-module.exports = initializeListeners;
+module.exports = {initializeHistory, trackRebaseHistory, xampRebaseHistory, tobRebaseHistory};

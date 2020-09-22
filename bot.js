@@ -13,6 +13,7 @@ const Xamp = require('./src/components/Xamp')
 const Boa = require('./src/components/Boa')
 const YFKA = require('./src/components/Yfka')
 const Eth = require('./src/components/Eth')
+const {initializeHistory, xampRebaseHistory, tobRebaseHistory} = require('./rebaseHistory')
 
 const dotenv = require('dotenv');
 dotenv.config();
@@ -275,6 +276,7 @@ updateInternals();
 
 const initializeListeners = require('./rebaseListener.js');
 initializeListeners(bot);
+initializeHistory()
 
 // TG BOT ENTRYPOINTS
 bot.onText(/\/help/, async (msg) => {
@@ -284,6 +286,7 @@ bot.onText(/\/help/, async (msg) => {
           `Commands available:
     /help - You are here.
     /burn /rebase - Get coin Rebase info.
+    /history - Rebase history for XAMP + TOB.
     /websites - Get important websites.
     /marketcap - Get coin marketcap data.
     /supply - Get detailed supply data.
@@ -376,6 +379,47 @@ bot.onText(/\/rebase/, async (msg) => {
     try {
         await updateInternals();
         bot.sendMessage(msg.chat.id, coin_xamp.getRebase() + '\n' + coin_tob.getRebase() + '\n' + coin_boa.getRebase());
+    } catch (error) {
+        console.error("BOT CATCH ERROR /rebase:\n",error);
+    }
+});
+
+function getBurnHistoryTailMsg(tail) {
+    msg = `XAMP:\n`
+
+    var items = Object.keys(xampRebaseHistory).map(function(key) {
+        return xampRebaseHistory[key];
+    });
+    items.sort(function (x, y) {
+        return x.timestamp - y.timestamp;
+    })
+
+    // Start from end, take last N
+    for (let i = items.length-1; i > items.length-(tail+1); i--) {
+        curHistory = items[i]
+        msg += `    [#` + i + `] ` + curHistory.broadcastHeader + ` ` + curHistory.timestamp.fromNow() + '\n'
+    }
+
+    items = Object.keys(tobRebaseHistory).map(function(key) {
+        return tobRebaseHistory[key];
+    });
+    items.sort(function (x, y) {
+        return x.timestamp - y.timestamp;
+    })
+
+    msg += `\nTOB:\n`
+    // Start from end, take last N
+    for (let i = items.length-1; i > items.length-(tail+1); i--) {
+        curHistory = items[i]
+        msg += `    [#` + i + `]` + curHistory.broadcastHeader + ` ` + curHistory.timestamp.fromNow() + '\n'
+    }
+
+    return msg
+}
+
+bot.onText(/\/history/, async (msg) => {
+    try {
+       bot.sendMessage(msg.chat.id, getBurnHistoryTailMsg(5));
     } catch (error) {
         console.error("BOT CATCH ERROR /rebase:\n",error);
     }
