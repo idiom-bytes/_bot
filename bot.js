@@ -398,8 +398,22 @@ function getBurnHistoryTailMsg(tail) {
     // Start from end, take last N
     for (let i = items.length-1; i > items.length-(tail+1); i--) {
         curHistory = items[i]
-        msg += `    [#` + i + `] ` + curHistory.broadcastHeader + ` ` + curHistory.timestamp.fromNow() + '\n'
+        msg += `    [#` + (i+1) + `] ` + curHistory.broadcastHeader + ` ` + curHistory.timestamp.fromNow() + '\n'
     }
+
+    var numBurns = _(xampRebaseHistory)
+        .countBy(item => item.broadcastHeader)
+        .value()
+
+    var burnSummary = Object.keys(numBurns).map(function(key) {
+        return {
+            outcome: key.includes("Success") ? "Success" : "Fail",
+            header: key,
+            count: numBurns[key]
+        }
+    });
+
+    msg += `Total Rebases: ` + (burnSummary[0].count + burnSummary[1].count) + ` Successful: ` + burnSummary[0].count + ` Failed: ` + burnSummary[1].count + `\n`
 
     items = Object.keys(tobRebaseHistory).map(function(key) {
         return tobRebaseHistory[key];
@@ -408,12 +422,26 @@ function getBurnHistoryTailMsg(tail) {
         return x.timestamp - y.timestamp;
     })
 
+    numBurns = _(tobRebaseHistory)
+        .countBy(item => item.broadcastHeader)
+        .value()
+
+    burnSummary = Object.keys(numBurns).map(function(key) {
+        return {
+            outcome: key.includes("Success") ? "Success" : "Fail",
+            header: key,
+            count: numBurns[key]
+        }
+    });
+
     msg += `\nTOB:\n`
     // Start from end, take last N
     for (let i = items.length-1; i > items.length-(tail+1); i--) {
         curHistory = items[i]
-        msg += `    [#` + i + `]` + curHistory.broadcastHeader + ` ` + curHistory.timestamp.fromNow() + '\n'
+        msg += `    [#` + (i+1) + `]` + curHistory.broadcastHeader + ` ` + curHistory.timestamp.fromNow() + '\n'
     }
+
+    msg += `Total Rebases: ` + (burnSummary[0].count + burnSummary[1].count) + ` Successful: ` + burnSummary[0].count + ` Failed: ` + burnSummary[1].count + `\n`
 
     return msg
 }
