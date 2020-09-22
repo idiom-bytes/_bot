@@ -206,6 +206,7 @@ Tip Link: https://bit.ly/2QPUjWk`,
         "https://twitter.com/CautyMu/status/1291545838418685952",
         "https://twitter.com/CautyMu/status/1291530112056217600"
     ],
+    yfkawtf: "staking went live. and if you put in motherfuckin tree fiddy in the stake, yo ass was stacking up like 6 fiddy within an hour... so that shit caused the whole motherfucking thing to collapse, cause you know, mofuckas got rent to pay and shit. So then, Master bill said fuck all this nonsense. Cause motherfuckers was losing it (cause people started dumping) and locked everything and said yo, I got all yall monies. I aint finna spend any, im just holding onto it while i fix the issue with the reward ssystem.... so like give me some time, and you know how motherfuckers be, when they gotta wait a few hours - especially without they money - but now bill finna hook us up if we was staked. and all will be normal.\n",
     github:
         `Audit & contribute to the bot here:
 
@@ -285,6 +286,7 @@ bot.onText(/\/help/, async (msg) => {
           msg.chat.id,
           `Commands available:
     /help - You are here.
+    /yfkawtf - WTF?
     /burn /rebase - Get coin Rebase info.
     /leaderboard - Rebase leaderboard for XAMP + TOB.
     /history - Rebase history for XAMP + TOB.
@@ -311,6 +313,14 @@ bot.onText(/\/help/, async (msg) => {
         console.log("Telegram chat id is:", msg.chat.id)
     } catch (error) {
         console.error("BOT CATCH ERROR /help:\n",error);
+    }
+});
+
+bot.onText(/\/yfkawtf/, async (msg) => {
+    try {
+        bot.sendMessage(msg.chat.id, CONFIG_PARAMS.yfkawtf);
+    } catch (error) {
+        console.error("BOT CATCH ERROR /supply:\n",error);
     }
 });
 
