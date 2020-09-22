@@ -286,6 +286,7 @@ bot.onText(/\/help/, async (msg) => {
           `Commands available:
     /help - You are here.
     /burn /rebase - Get coin Rebase info.
+    /leaderboard - Rebase leaderboard for XAMP + TOB.
     /history - Rebase history for XAMP + TOB.
     /websites - Get important websites.
     /marketcap - Get coin marketcap data.
@@ -420,6 +421,59 @@ function getBurnHistoryTailMsg(tail) {
 bot.onText(/\/history/, async (msg) => {
     try {
        bot.sendMessage(msg.chat.id, getBurnHistoryTailMsg(10));
+    } catch (error) {
+        console.error("BOT CATCH ERROR /rebase:\n",error);
+    }
+});
+
+function getLeaderboardHistory(head) {
+    msg = `XAMP:\n`
+
+    var leaderboard = _(xampRebaseHistory)
+        .countBy(item => item.from)
+        .value()
+
+    // Create items array
+    leaderboard = Object.keys(leaderboard).map(function(key) {
+        return [key, leaderboard[key]];
+    });
+
+    // Sort the array based on the second element
+    leaderboard.sort(function(first, second) {
+        return second[1] - first[1];
+    });
+
+    // Start from end, take last N
+    for (let i = 0; i < head; i++) {
+        msg += `[#` + (i+1) + `] ` + leaderboard[i][0] + `\n       Rebased ` + leaderboard[i][1] + ' times\n'
+    }
+
+    leaderboard = _(tobRebaseHistory)
+        .countBy(item => item.from)
+        .value()
+
+    // Create items array
+    leaderboard = Object.keys(leaderboard).map(function(key) {
+        return [key, leaderboard[key]];
+    });
+
+    // Sort the array based on the second element
+    leaderboard.sort(function(first, second) {
+        return second[1] - first[1];
+    });
+
+    msg += `\nTOB:\n`
+    // Start from end, take last N
+    for (let i = 0; i < head; i++) {
+        msg += `[#` + (i+1) + `] ` + leaderboard[i][0] + `\n       Rebased ` + leaderboard[i][1] + ' times\n'
+    }
+
+    return msg
+}
+
+bot.onText(/\/leaderboard/, async (msg) => {
+    try {
+        bot.sendMessage(msg.chat.id, getLeaderboardHistory(5));
     } catch (error) {
         console.error("BOT CATCH ERROR /rebase:\n",error);
     }

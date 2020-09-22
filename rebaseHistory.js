@@ -26,6 +26,7 @@ var historyDirty = false
 
 async function trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, ticker) {
     var timestamp = null
+    var from = null
     var txHash = "No TX issued."
     var broadcastHeader = delta > 0 ? "RebaseSuccess \ud83d\udd25\ud83d\udd25\ud83d\udd25" : "RebaseFail \ud83d\udd34"
     var coinsBurned = delta > 0 ? commas(delta.toFixed(2)) : 0
@@ -33,10 +34,14 @@ async function trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, tick
 
     if(contractEvent.transactionHash) {
         txHash = contractEvent.transactionHash
+
         try {
             var blockNumber = contractEvent.blockNumber
             timestamp = await web3.eth.getBlock(blockNumber)
             timestamp = moment.unix(timestamp.timestamp)
+
+            var tx = await web3.eth.getTransaction(txHash)
+            from = tx.from
         } catch(error) {
             console.error(error)
         }
@@ -55,6 +60,7 @@ async function trackRebaseHistory(contractEvent, oldPrice, newPrice, delta, tick
     if( !(txHash in historyDict) ) {
         historyDict[txHash] = {
             txHash: txHash,
+            from: from,
             blockNumber: blockNumber,
             timestamp: timestamp,
             broadcastHeader: broadcastHeader,
