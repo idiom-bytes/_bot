@@ -419,7 +419,7 @@ function getBurnHistoryTailMsg(tail) {
 
 bot.onText(/\/history/, async (msg) => {
     try {
-       bot.sendMessage(msg.chat.id, getBurnHistoryTailMsg(5));
+       bot.sendMessage(msg.chat.id, getBurnHistoryTailMsg(10));
     } catch (error) {
         console.error("BOT CATCH ERROR /rebase:\n",error);
     }
