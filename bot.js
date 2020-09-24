@@ -133,7 +133,7 @@ const CONFIG_PARAMS = {
         `Official Sites
         XAMP Official: https://antiample.org/
         TOB Official: https://tokensofbabel.com/
-        BOA Official: https://boacoin.cash/
+        BOA Official: https://boa-token.webflow.io/
         YFKA Official: https://burnthestate.com/
 
 Community Sites
