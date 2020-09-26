@@ -206,7 +206,25 @@ Tip Link: https://bit.ly/2QPUjWk`,
         "https://twitter.com/CautyMu/status/1291545838418685952",
         "https://twitter.com/CautyMu/status/1291530112056217600"
     ],
-    yfkawtf: "staking went live. and if you put in motherfuckin tree fiddy in the stake, yo ass was stacking up like 6 fiddy within an hour... so that shit caused the whole motherfucking thing to collapse, cause you know, mofuckas got rent to pay and shit. So then, Master bill said fuck all this nonsense. Cause motherfuckers was losing it (cause people started dumping) and locked everything and said yo, I got all yall monies. I aint finna spend any, im just holding onto it while i fix the issue with the reward ssystem.... so like give me some time, and you know how motherfuckers be, when they gotta wait a few hours - especially without they money - but now bill finna hook us up if we was staked. and all will be normal.\n",
+    yfkawtf: `Final tests are being done.
+        
+[Contract 0x]
+0xa2061f062f8817a099b929760934a6e4b6f118e3
+
+YFKA Rules: 
+
+[Action] => Stake => Your stake is added, or updated.
+[GlobalEmissionRate] is update.
+If you already have a [PersonalEmissionRate] set, you keep it.
+If you don't have a [PersonalEmissionRate], you get the latest [GlobalEmissionRate].
+
+[Action] => Redeem => Your stake is maintained, but you collect your rewards.
+[GlobalEmissionRate] is updated. 
+Your [PersonalEmissionRate] becomes the latest [GlobalEmissionRate].
+
+[Action] => Unstake => You remove your rewards + existing stake.
+[GlobalEmissionRate] is updated.
+If you stake again, your [PersonalEmissionRate] becomes the latest [GlobalEmissionRate]`,
     github:
         `Audit & contribute to the bot here:
 
@@ -423,7 +441,7 @@ function getBurnHistoryTailMsg(tail) {
         }
     });
 
-    msg += `Total Rebases: ` + (burnSummary[0].count + burnSummary[1].count) + ` Successful: ` + burnSummary[0].count + ` Failed: ` + burnSummary[1].count + `\n`
+    msg += '    Rebases [' + (burnSummary[0].count + burnSummary[1].count) + ']\nSuccessful [' + burnSummary[0].count + ']\nFailed [' +  burnSummary[1].count + ']\n'
 
     items = Object.keys(tobRebaseHistory).map(function(key) {
         return tobRebaseHistory[key];
@@ -451,8 +469,7 @@ function getBurnHistoryTailMsg(tail) {
         msg += `    [#` + (i+1) + `]` + curHistory.broadcastHeader + ` ` + curHistory.timestamp.fromNow() + '\n'
     }
 
-    msg += `Total Rebases: ` + (burnSummary[0].count + burnSummary[1].count) + ` Successful: ` + burnSummary[0].count + ` Failed: ` + burnSummary[1].count + `\n`
-
+    msg += '    Rebases [' + (burnSummary[0].count + burnSummary[1].count) + ']\nSuccessful [' + burnSummary[0].count + ']\nFailed [' +  burnSummary[1].count + ']'
     return msg
 }
 
@@ -463,6 +480,20 @@ bot.onText(/\/history/, async (msg) => {
         console.error("BOT CATCH ERROR /rebase:\n",error);
     }
 });
+
+function getLeaderboardTitle(times) {
+    if(times < 5) { return '\ud83d\udeb6 Walking' } // walkign
+    else if(times < 10) { return '\ud83d\udeb4 Cycling' } // bicycle
+    else if(times < 15) { return '\ud83d\ude8c Bussing' } // bus
+    else if(times < 20) { return '\ud83d\ude99 Driving' } // shitty car
+    else if(times < 25) { return '\ud83d\ude97 Speeding' } // sporty car
+    else if(times < 30) { return '\ud83d\ude88 Locomoting' } // light rail
+    else if(times < 50) { return '\ud83d\udea2 Yachting' } // boat
+    else if(times < 75) { return '\ud83d\ude84 Bulleting' } // high speed train
+    else if(times < 90) { return '\ud83d\ude81 Flying' } // helicopter
+    else if(times < 100) { return '\ud83d\ude80 Rocketing' } // rocket
+    else if(times >= 100) { return '\ud83d\ude80 Rocketing' } // rocket
+}
 
 function getLeaderboardHistory(head) {
     msg = `XAMP:\n`
@@ -483,7 +514,7 @@ function getLeaderboardHistory(head) {
 
     // Start from end, take last N
     for (let i = 0; i < head; i++) {
-        msg += `[#` + (i+1) + `] ` + leaderboard[i][0] + `\n       Rebased ` + leaderboard[i][1] + ' times\n'
+        msg += `[#` + (i+1) + `] ` + leaderboard[i][0] + `\n` + getLeaderboardTitle(leaderboard[i][1]) + ` to the Citadel. Rebased ` + leaderboard[i][1] + ' times. \n'
     }
 
     leaderboard = _(tobRebaseHistory)
@@ -503,7 +534,7 @@ function getLeaderboardHistory(head) {
     msg += `\nTOB:\n`
     // Start from end, take last N
     for (let i = 0; i < head; i++) {
-        msg += `[#` + (i+1) + `] ` + leaderboard[i][0] + `\n       Rebased ` + leaderboard[i][1] + ' times\n'
+        msg += `[#` + (i+1) + `] ` + leaderboard[i][0] + `\n` + getLeaderboardTitle(leaderboard[i][1]) + ` to the Citadel. Rebased ` + leaderboard[i][1] + ' times\n'
     }
 
     return msg
